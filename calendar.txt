@@ -1,0 +1,10 @@
+date: 6/12 - Fini les fonctions standard (pour l'instant juste print() (print formaté comme pour printf)) + Rédiger les test unitaires 
+date: 13/12 - commencé a rédiger le lexer c'est a dire au minimum les structures de donnée pour stocker les tokens
+date: 3/01 - lexer fini + fin parser (ast généré)
+date: 17/01 - 
+
+
+ - Générer l'IR (au moins 2-3 semaines pour être large)
+
+
+ Rendu: code + doc + présentation
