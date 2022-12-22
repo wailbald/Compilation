@@ -1,3 +1,5 @@
+Loop/condition: ------------------
+
 if
 else
 for
@@ -6,9 +8,9 @@ while
 break
 continue
 
-func
-
 return
+
+Type: ----------------------------
 
 i8
 i16
@@ -25,37 +27,79 @@ f64
 
 void
 
+str
+
+tab
+
+func
+
+Opérateur Binaire: ---------------------
+
 or
 and
 nand
 xor
->>
-<<
+not
+rshft
+lshft
++
+-
+*
+/
+=
 
+Opérateur de comparaison: -----------
 
-Str
+==
+!=
+<
+>
+<=
+>=
 
-tab
+Blocs: --------------------------
 
 (
 )
 [
 ]
+{
+}
+
+String/char: ---------------
+"
+'
+
+Autre: ---------------------------
 
 ;
 ,
 .
 :
 
-+
--
-*
-/
-=
-!
-?
-"
-'
 
-pls (alloc)
-yeet (désalloc)
+
+
+
+
+
+
+
+
+Opérateur string:
+
+copy
+concat -> nv string concat
+remove -> nv string sans carac
+compare -> renvoie la valeur de la diff de la première diff
+insert -> nv string avec insertion a l'endroit t
+reverse -> nv string inverse tout caracat
+contain -> renvoie true ou false
+locate -> renvoie un tableau avec toute les position
+replace -> nv string
+trim -> nv string qui supprime les espaces avant/après
+uppercase -> nv string tout en maj
+lowercase -> nv string tout en min
+
+
+remove(abcdefg,cde) -> abfg

@@ -8,10 +8,29 @@ Loop: for, while, do while
 Condition: if, else
 
 Lib standard:
-void print() <- print formated string
-
+print(): void <- print formated string
 
 
 
 Prio: i8 ,i16, i32, i64 (Et les non signées), Char, f32, f64, for, while, if, else, print
 Pas prio: Tableaux, String, Bool, (auto), stuct, enum
+
+
+Programme d'exemple:
+
+i32 a = 55;
+f64 b = 5.5;
+f64 d = 6.5;
+i32 c = a + a;
+
+print("Valeur de c: %i32 \n",a);
+print("b + d = %f64",addf(b,d));
+
+func addf(f64 a, f64 b): f64
+{
+	return a + b;
+}
+
+print("d + b = %f64",addf(d,b));
+
+tab[20,int] t;
