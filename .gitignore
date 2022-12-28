@@ -31,6 +31,7 @@
 *.out
 *.app
 
+test_token
 CMakeFiles/* 
 CMakeCache.txt 
 cmake_install.cmake 

@@ -8,6 +8,7 @@ set(SOURCE
    ${SOURCE}
    ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
 )
 
 set(TEST_SRC
