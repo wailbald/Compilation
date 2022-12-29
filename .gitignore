@@ -32,6 +32,9 @@
 *.app
 
 test_token
+test_lexer
+c_compiler
 CMakeFiles/* 
 CMakeCache.txt 
 cmake_install.cmake 
+Makefile

@@ -6,4 +6,3 @@ float: '[0-9]*\.[0-9]*'
 
 Rest:
 identifier: '[a-Z][_0-9a-Z]*'
-

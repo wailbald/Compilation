@@ -11,18 +11,31 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
 )
 
-set(TEST_SRC
-   ${TEST_SRC}
-   ${SOURCE}
+set(TEST_TOKEN_SRC
+   ${TEST_TOKEN_SRC}
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_token.cpp
+)
+
+set(TEST_LEXER_SRC
+   ${TEST_LEXER_SRC}
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/test_lexer.cpp
 )
 
 set(HEADERS
    ${HEADERS}
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.hpp   
    ${CMAKE_CURRENT_SOURCE_DIR}/src/token.hpp
 )
 
-add_executable(c_compiler ${SOURCE} ${HEADERS})
+#add_executable(c_compiler ${SOURCE} ${HEADERS})
 
-add_executable(Test_token ${TEST_SRC} ${HEADERS})
+add_executable(test_token ${TEST_TOKEN_SRC} ${HEADERS})
+add_executable(test_lexer ${TEST_LEXER_SRC} ${HEADERS})
+
+
+
