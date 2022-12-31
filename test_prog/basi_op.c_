@@ -4,4 +4,4 @@ int c = a
 int d = 0;
 d = a * 2;
 int e;
-e = d / a²;
+e = d / a;

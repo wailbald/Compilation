@@ -39,7 +39,7 @@ enum token_t {
 	LT,			// <
 	GT,			// >
 	LE,			// <=
-	GE,			// <=
+	GE,			// >=
 	CAND,		// &&
 	COR,		// ||
 	
@@ -69,8 +69,7 @@ enum token_t {
 
 	/* Other */
 
-	VARDECL,		// déclaration variable
-	FUNDECL,		// déclaration fonction
+	DECL,		// déclaration fonction ou variable
 	EOF_			// End Of File
 };
 
@@ -128,7 +127,7 @@ static std::string token_name[] =
 
 	"ID",			// identifier
 	
-	/* Type */
+	/* Literal */
 
 	"STR",			// string
 	"CHAR",			// char
@@ -138,15 +137,13 @@ static std::string token_name[] =
 
 	/* Other */
 
-	"VARDECL",
-	"FUNDECL",
+	"DECL",
 	"EOF_"			// End Of File
 };
 
 typedef struct location{
-	unsigned line;
-	unsigned col;
-	long position; // Position returned by ftell
+	size_t line;
+	size_t col;
 } location;
 
 class Token

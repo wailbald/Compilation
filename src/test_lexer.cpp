@@ -7,15 +7,11 @@ int main(int argc, char** argv)
 		printf("Error: Wrong number of argument\nUsage: %s \"file to parse\"\n",argv[0]);
 		return 1;
 	}
-	std::string line;
-	
-	FILE* f = fopen(argv[1],"r");
-	do
+	std::vector<Token> tok = lexer(argv[1]);
+	for(size_t i = 0; i<tok.size();++i)
 	{
-		line = read_line(f);
-		std::cout<<line<<std::endl;
-		std::cout<<"-----------------"<<std::endl;
+		std::cout<<tok[i];
 	}
-	while(line.find("EOF")==line.npos);
+	std::cout<<std::endl;
 	return 0;
 }
