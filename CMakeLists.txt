@@ -4,7 +4,7 @@ project(c_compiler)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
-#add_compile_options(-Wall -Wextra -Ofast -mavx2 -march=native -mtune=native -finline-functions -funroll-loops -ftree-loop-vectorize -ftree-vectorize)
+add_compile_options(-Wall -Wextra -Ofast -mavx2 -march=native -mtune=native -finline-functions -funroll-loops -ftree-vectorize)
 
 set(SOURCE
    ${SOURCE}
