@@ -23,6 +23,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num, char* filenam
 	std::vector<Token> tok_line;
 	std::smatch match;
 	size_t col = 1;
+	std::string full_line(line);
 	while(line.size()!=0)
 	{
 		line.insert(0,"#/#");
@@ -30,7 +31,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num, char* filenam
 		{
 			line.erase(match.position(),match.length());
 			col = 1;
-			*line_num++;
+			*line_num = *line_num + 1;
 			continue;
 		}
 		if(std::regex_search(line,match,BLANK_regex))
@@ -387,7 +388,6 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num, char* filenam
 		printf("Error: Unrecognized token at %s/%s:%lu:%lu\n",path,filename,*line_num,col);
 		exit(2);
 	}
-
 	return tok_line;
 }
 
@@ -403,7 +403,6 @@ std::vector<Token> lexer(char* filename)
 		line = read_line(f);
 		std::vector<Token> tok_line = gen_tok_line(line,&line_num,filename);
 		tok.insert(tok.end(),tok_line.begin(),tok_line.end());
-		line_num++;
 	}
 	while(line.find("#EOF#")==line.npos);
 
