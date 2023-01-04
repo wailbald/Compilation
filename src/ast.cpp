@@ -48,7 +48,7 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 		
 	if(paren < 0)
 	{
-		std::cout "Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
+		std::cout<< "Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
 	}
 		
 	if(tok[i+1].get_type() == LPAREN)
@@ -59,12 +59,12 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 		
 	if(paren < 0)
 	{
-		std::cout "Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
+		std::cout<<"Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
 	}
 	
 	i += 2;
 	
-	while(tok[i+1].get_type != SEMICOLON)
+	while(tok[i+1].get_type() != SEMICOLON)
 	{
 		if(tok[i].get_type() == LPAREN)
 			paren ++;
@@ -74,10 +74,11 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 			
 		if(paren < 0)
 		{
-			std::cout "Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
+			std::cout<<"Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
+			exit(4);
 		}
 		
-		if(check_type(tok[i]) == check_type(tok[i-1] || check_type(tok[i]) == check_type(tok[i+1])
+		if(check_type(tok[i]) == check_type(tok[i-1]) || check_type(tok[i]) == check_type(tok[i+1]))
 		{
 			std::cout << "problème dans l'assignation, vous ne pouvez pas utiliser ces symboles à la suites" << std::endl;
 		}
