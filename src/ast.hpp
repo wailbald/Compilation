@@ -28,5 +28,5 @@ class Tree
 };
 
 int assign_check_type(Token t);
-void verif_assign(std::vector<Token> tok, int i);
+int verif_assign(std::vector<Token> tok, int i);
 Tree create_assign(std::vector<Token> tok, int i);

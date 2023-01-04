@@ -21,8 +21,9 @@ int assign_check_type(Token t)
 	exit(3);
 }
 
-void verif_assign(std::vector<Token> tok, int i, int nb)
+int verif_assign(std::vector<Token> tok, int i, int nb, int *taille)
 {
+	int max = 0;
 	int paren = 0;
 	
 	i += nb;
@@ -47,6 +48,9 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 	if(tok[i].get_type() == LPAREN)
 		paren ++;
 		
+	if(max < paren)
+		max = paren;
+		
 	if(tok[i].get_type() == RPAREN)
 		paren --;
 		
@@ -57,6 +61,9 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 		
 	if(tok[i+1].get_type() == LPAREN)
 		paren ++;
+		
+	if(max < paren)
+		max = paren;
 		
 	if(tok[i+1].get_type() == RPAREN)
 		paren --;
@@ -72,6 +79,9 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 	{
 		if(tok[i].get_type() == LPAREN)
 			paren ++;
+		
+		if(max < paren)
+			max = paren;
 		
 		if(tok[i].get_type() == RPAREN)
 			paren --;
@@ -91,18 +101,23 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 		}
 		i++;
 	}
+	
+	return max;
 }
 
 Tree create_assign(std::vector<Token> tok, int i)
 {
 	//vérification du nombre de caractère avant le symbole d'assignation
+	int max = 0;
+	int *taille = 0;
+	
 	int nb1 = i;
 	while(tok[nb1].get_type() != ASSIGN)
 	{
 		nb1++;
 	}
 	
-	verif_assign(tok,i,i-nb1);
+	max = verif_assign(tok,i,i-nb1);
 
 	int nb = i - nb1;
 	Node n(tok[i+nb]);
@@ -132,12 +147,49 @@ Tree create_assign(std::vector<Token> tok, int i)
 	{
 		Node n1(tok[i+1]);
 		tree.get_root()->add_left(&n1);
-		std::cout << "dans celui ci" << std::endl;
 	}
 	
 	//création de la partie droite de l'arbre
 
+	int tmp = i+taille;
+	int paren = 0;
 
+	for(int j = 0; j < max; j++)
+	{
+		while(tmp != i)
+		{
+			if(tok[tmp].get_type() == LPAREN)
+				paren ++;
+				
+			if(tok[tmp].get_type() == RPAREN)
+				paren --;
+			
+			if((tok[tmp].get_type() == PLUS || tok.[tmp].get_type() == MINUS) && paren == j);
+			{
+				
+			}
+			
+			tmp --;
+		}
+		
+		tmp = i+taille;
+		
+		while(tmp != i)
+		{
+			if(tok[tmp].get_type() == LPAREN)
+				paren ++;
+				
+			if(tok[tmp].get_type() == RPAREN)
+				paren --;
+			
+			if((tok[tmp].get_type() == TIMES || tok.[tmp].get_type() == DIVIDE) && paren == j);
+			{
+				
+			}
+			
+			tmp --;
+		}
+	}
 
 	std::cout << "fini" << std::endl;
 
