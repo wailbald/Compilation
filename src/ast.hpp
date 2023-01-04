@@ -27,6 +27,6 @@ class Tree
 		Node *get_root(){return this->root;};
 };
 
-int check_type(Token t);
+int assign_check_type(Token t);
 void verif_assign(std::vector<Token> tok, int i);
 Tree create_assign(std::vector<Token> tok, int i);

@@ -1,17 +1,21 @@
 #include "ast.hpp"
 
-int check_type(Token t)
+int assign_check_type(Token t)
 {
+	if(t.get_type() == ID || t.get_type() == STR || t.get_type() == CHAR
+	|| t.get_type() == INT|| t.get_type() == DOUBLE)
+		return 1;
+
 	if(t.get_type() == PLUS || t.get_type() ==  MINUS||t.get_type() ==  TIMES||t.get_type() == DIVIDE 
 	|| t.get_type() == MODULE|| t.get_type() == LSHIFT|| t.get_type() == RSHIFT ||t.get_type() == XOR)
 		return 2;
 		
-	if(t.get_type() == ID || t.get_type() == STR || t.get_type() == CHAR
-	|| t.get_type() == INT|| t.get_type() == DOUBLE)
-		return 1;
-		
 	if(t.get_type() == LPAREN || t.get_type() == RPAREN)
 		return 3;
+
+	if(t.get_type() == EQ || t.get_type() == NEQ || t.get_type() == LT || t.get_type() == GT ||
+		t.get_type() == LE || t.get_type() == GE || t.get_type() == CAND || t.get_type() == COR)
+		return 4;
 		
 	std::cout << "Certains symbole de l'assignation ne sont pas pris en charge" << std::endl;
 	exit(3);
@@ -78,7 +82,10 @@ void verif_assign(std::vector<Token> tok, int i, int nb)
 			exit(4);
 		}
 		
-		if(check_type(tok[i]) == check_type(tok[i-1]) || check_type(tok[i]) == check_type(tok[i+1]))
+		if(assign_check_type(tok[i]) == assign_check_type(tok[i-1]) 
+			|| assign_check_type(tok[i]) == assign_check_type(tok[i+1])
+			|| (assign_check_type(tok[i]) == 4 && assign_check_type(tok[i-1]) == 2)
+			|| (assign_check_type(tok[i]) == 4 && assign_check_type(tok[i+1]) == 2))
 		{
 			std::cout << "problème dans l'assignation, vous ne pouvez pas utiliser ces symboles à la suites" << std::endl;
 		}
@@ -95,6 +102,8 @@ Tree create_assign(std::vector<Token> tok, int i)
 		nb1++;
 	}
 	
+	verif_assign(tok,i,i-nb1);
+
 	int nb = i - nb1;
 	Node n(tok[i+nb]);
 
@@ -127,6 +136,8 @@ Tree create_assign(std::vector<Token> tok, int i)
 	}
 	
 	//création de la partie droite de l'arbre
+
+
 
 	std::cout << "fini" << std::endl;
 
