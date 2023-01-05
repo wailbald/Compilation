@@ -1,4 +1,4 @@
-tab T[22,int] = 0
+tab T[22,int]
 
 a = 10;
 

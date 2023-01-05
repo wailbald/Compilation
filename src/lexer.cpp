@@ -39,6 +39,41 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 			*col_num= *col_num + match.length() - 3;
 			continue;
 		}
+		if(std::regex_search(line,match,INTDECL_regex))
+		{
+			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"int"));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
+		if(std::regex_search(line,match,STRDECL_regex))
+		{
+			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"str"));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
+		if(std::regex_search(line,match,CHARDECL_regex))
+		{
+			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"char"));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
+		if(std::regex_search(line,match,DOUBLEDECL_regex))
+		{
+			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"double"));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
+		if(std::regex_search(line,match,TABDECL_regex))
+		{	
+			tok_line.push_back(Token(TAB,(location){*line_num,*col_num},"tab"));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}	
 		if(std::regex_search(line,match,IF_regex))
 		{
 			tok_line.push_back(Token(IF,(location){*line_num,*col_num}));
@@ -76,7 +111,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 		}
 		if(std::regex_search(line,match,DO_regex))
 		{
-			tok_line.push_back(Token(ELSE,(location){*line_num,*col_num}));
+			tok_line.push_back(Token(DO,(location){*line_num,*col_num}));
 			line.erase(match.position(),match.length());
 			*col_num= *col_num + match.length() - 3;
 			continue;
@@ -95,41 +130,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 			*col_num= *col_num + match.length() - 3;
 			continue;
 		}
-		if(std::regex_search(line,match,INTDECL_regex))
-		{
-			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"int"));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}
-		if(std::regex_search(line,match,STRDECL_regex))
-		{
-			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"str"));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}
-		if(std::regex_search(line,match,CHARDECL_regex))
-		{
-			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"char"));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}
-		if(std::regex_search(line,match,DOUBLEDECL_regex))
-		{
-			tok_line.push_back(Token(DECL,(location){*line_num,*col_num},"double"));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}
-		if(std::regex_search(line,match,TABDECL_regex))
-		{	
-			tok_line.push_back(Token(TAB,(location){*line_num,*col_num},"tab"));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}	
+		
 		if(std::regex_search(line,match,EOF_regex))
 		{
 			tok_line.push_back(Token(EOF_,(location){*line_num,*col_num}));
@@ -368,13 +369,6 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 			*col_num= *col_num + match.length() - 3;
 			continue;
 		}
-		if(std::regex_search(line,match,INT_regex))
-		{
-			tok_line.push_back(Token(INT,(location){*line_num,*col_num},line.substr(match.position()+3,match.length()-3)));
-			line.erase(match.position(),match.length());
-			*col_num= *col_num + match.length() - 3;
-			continue;
-		}
 		if(std::regex_search(line,match,DOUBLE_regex))
 		{
 			tok_line.push_back(Token(DOUBLE,(location){*line_num,*col_num},line.substr(match.position()+3,match.length()-3)));
@@ -382,9 +376,16 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 			*col_num= *col_num + match.length() - 3;
 			continue;
 		}
+		if(std::regex_search(line,match,INT_regex))
+		{
+			tok_line.push_back(Token(INT,(location){*line_num,*col_num},line.substr(match.position()+3,match.length()-3)));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
 		char path[PATH_MAX ];
 		getcwd(path,PATH_MAX);
-		printf("\033[1;31mError\033[0m: Unrecognized token at %s/%s:%lu:%lu\n",path,filename,*line_num,*col_num);
+		printf("\033[1m%s/%s:%lu:%lu: \033[1;31mError\033[0m: Unrecognized token\n",path,filename,*line_num,*col_num);
 		exit(2);
 	}
 	return tok_line;
