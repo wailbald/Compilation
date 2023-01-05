@@ -100,6 +100,7 @@ int verif_assign(std::vector<Token> tok, int i, int nb, int *taille)
 			std::cout << "problème dans l'assignation, vous ne pouvez pas utiliser ces symboles à la suites" << std::endl;
 		}
 		i++;
+		taille++;
 	}
 	
 	return max;
@@ -117,7 +118,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 		nb1++;
 	}
 	
-	max = verif_assign(tok,i,i-nb1);
+	max = verif_assign(tok,i,i-nb1,taille);
 
 	int nb = i - nb1;
 	Node n(tok[i+nb]);
@@ -151,7 +152,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 	
 	//création de la partie droite de l'arbre
 
-	int tmp = i+taille;
+	int tmp = i+(*taille);
 	int paren = 0;
 
 	for(int j = 0; j < max; j++)
@@ -164,7 +165,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 			if(tok[tmp].get_type() == RPAREN)
 				paren --;
 			
-			if((tok[tmp].get_type() == PLUS || tok.[tmp].get_type() == MINUS) && paren == j);
+			if((tok[tmp].get_type() == PLUS || tok[tmp].get_type() == MINUS) && paren == j)
 			{
 				
 			}
@@ -172,7 +173,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 			tmp --;
 		}
 		
-		tmp = i+taille;
+		tmp = i+(*taille);
 		
 		while(tmp != i)
 		{
@@ -182,7 +183,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 			if(tok[tmp].get_type() == RPAREN)
 				paren --;
 			
-			if((tok[tmp].get_type() == TIMES || tok.[tmp].get_type() == DIVIDE) && paren == j);
+			if((tok[tmp].get_type() == TIMES || tok[tmp].get_type() == DIVIDE) && paren == j)
 			{
 				
 			}
