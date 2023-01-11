@@ -11,7 +11,14 @@ int main(int argc, char** argv)
 	for(size_t i = 0; i<tok.size();++i)
 	{
 		std::cout<<tok[i];
+		std::cout<<" ";
 	}
 	std::cout<<std::endl;
+
+	std::cout<<std::endl;
+
+	std::string str = gen_tok_string(tok); 
+	std::cout<<str<<std::endl;
+
 	return 0;
 }

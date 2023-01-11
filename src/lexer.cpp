@@ -409,3 +409,20 @@ std::vector<Token> lexer(char* filename)
 
 	return tok;
 }
+
+std::string gen_tok_string(std::vector<Token> tok)
+{
+	std::string str;
+	for(size_t i = 0; i < tok.size(); i++)
+	{
+		str.append(token_name[tok[i].get_type()]);
+		if(tok[i].get_text().size() != 0)
+		{
+			str.append("{");
+			str.append(tok[i].get_text());
+			str.append("}");
+		}
+		str.append(" ");
+	}
+	return str;
+}

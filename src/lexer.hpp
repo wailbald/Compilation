@@ -77,7 +77,7 @@ static std::basic_regex<char> CHAR_regex("#/#'.'",std::regex_constants::nosubs);
 static std::basic_regex<char> INT_regex("#/#([1-9][0-9]*|0)",std::regex_constants::egrep);
 static std::basic_regex<char> DOUBLE_regex("#/#([1-9][0-9]*\\.[0-9]*|0\\.0)",std::regex_constants::egrep);
 
-
 std::string read_line(FILE* f);
 std::vector<Token> gen_tok_line(std::string line,size_t line_num, char* filename);
 std::vector<Token> lexer(char* filename);
+std::string gen_tok_string(std::vector<Token> tok);
