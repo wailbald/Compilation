@@ -8,15 +8,6 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	std::vector<Token> tok = lexer(argv[1]);
-	for(size_t i = 0; i<tok.size();++i)
-	{
-		std::cout<<tok[i];
-		std::cout<<" ";
-	}
-	std::cout<<std::endl;
-
-	std::cout<<std::endl;
-
 	std::string str = gen_tok_string(tok); 
 	std::cout<<str<<std::endl;
 

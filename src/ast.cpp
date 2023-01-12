@@ -196,3 +196,99 @@ Tree create_assign(std::vector<Token> tok, int i)
 
 	return tree;
 }
+
+std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
+{
+	int paren_depth = 1;
+	std::vector<Token> cond_tok;
+	for(auto elem : basetok)
+	{
+		if(elem.get_type() == LPAREN)
+			paren_depth++;
+		if(elem.get_type() == RPAREN)
+			paren_depth--;
+		if(!paren_depth)
+			return cond_tok;
+		cond_tok.push_back(elem);
+	}
+	printf("Error: Unexpected End Of File\n");
+	exit(6);
+	return cond_tok;
+}
+
+std::vector<Token> gen_body_vect(std::vector<Token> basetok)
+{
+	int brckt_depth = 0;
+	bool in_bracket = false;
+	std::vector<Token> body_tok;
+	for(auto elem : basetok)
+	{
+		if(elem.get_type() == SEMICOLON)
+		{
+			if(in_bracket)
+			{
+				printf("Error: Unexpected SEMICOLON token\n");
+				exit(6);
+			}
+			else
+			{
+				body_tok.push_back(elem);
+				return body_tok;
+			}
+		}
+		if(elem.get_type() == LBRCKT)
+		{
+			brckt_depth++;
+			in_bracket = true;
+		}	
+			
+		if(elem.get_type() == RBRCKT)
+			brckt_depth--;
+		body_tok.push_back(elem);
+		if(!brckt_depth)
+			return body_tok;
+	}
+	printf("Error: Unexpected End Of File\n");
+	exit(6);
+	return body_tok;
+}
+
+NewNode& make_if_node(std::vector<Token> tok,location loc)
+{
+	std::smatch match;
+	std::vector<Token> cond_tok = gen_cond_vect(tok);
+	Expr *cond_part = parse_token(cond_tok);
+	tok.erase(tok.begin(),tok.begin()+cond_tok.size());
+	
+	std::vector<Token> body_tok = gen_body_vect(tok);
+	Expr *body_part = parse_token(body_tok);
+	tok.erase(tok.begin(),tok.begin()+body_tok.size());
+
+	std::string line = gen_tok_string(tok);
+	line.insert(0,"#/#");
+	if(std::regex_search(line,match,pELSEPART_regex))
+	{
+		std::vector<Token> else_tok = gen_body_vect(tok);
+		Expr *else_part = parse_token(else_tok);
+		tok.erase(tok.begin(),tok.begin()+else_tok.size());
+
+		IfThenElse ite(loc,cond_part,body_part,else_part);
+		return ite;
+	}
+	else
+	{
+		IfThenElse ite2(loc,cond_part,body_part);
+		return ite2;
+	}
+}
+
+Expr * parse_token(std::vector<Token> tok)
+{
+	Expr* abc = new Expr();
+	return abc;
+}
+
+Tree &parser(std::vector<Token> tok)
+{
+	Expr* root = parse_token(tok);
+}

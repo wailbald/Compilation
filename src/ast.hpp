@@ -1,4 +1,7 @@
+#pragma once
 #include "token.hpp"
+#include "ast_regex.hpp"
+#include "lexer.hpp"
 #include <vector>
 #include <cstdint>
 
@@ -24,6 +27,7 @@ class Tree
 	Node *root;
 
 	public:
+		Tree(){};
 		Tree(Node *root_) : root(root_) {};
 		Node *get_root(){return this->root;};
 };
@@ -44,7 +48,7 @@ class visitor{};
 class NewNode{	
 public:
 	location loc;
-
+	NewNode() {};
 	NewNode(location &loc_) : loc(loc_){};
 
 	void accept(visitor v);
@@ -52,6 +56,7 @@ public:
 
 class Expr: public NewNode {
 public:
+	Expr(): NewNode() {};
 	Expr(location &loc_) : NewNode(loc_) {};
 };
 
@@ -158,6 +163,9 @@ class IfThenElse : public Expr{
 public:
 	IfThenElse(location &_loc, Expr *_condition, Expr *_then_part,Expr *_else_part)
       : Expr(_loc), condition(_condition), then_part(_then_part), else_part(_else_part) {}
+
+    IfThenElse(location &_loc, Expr *_condition, Expr *_then_part)
+      : Expr(_loc), condition(_condition), then_part(_then_part) {}
 
     virtual ~IfThenElse() {
 	    delete else_part;
@@ -302,3 +310,11 @@ class Assign : public Expr{
   	Identifier &get_lhs(){return *lhs;};
   	Expr &get_rhs(){return *rhs;};
 };
+
+Tree &parser(std::vector<Token> tok);
+Expr * parse_token(std::vector<Token> tok);
+
+std::vector<Token> gen_cond_vect(std::vector<Token> basetok);
+std::vector<Token> gen_body_vect(std::vector<Token> basetok);
+
+NewNode& make_if_node(std::vector<Token> tok);
