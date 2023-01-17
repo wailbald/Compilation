@@ -1,0 +1,5 @@
+int a = 2 + 2;
+str abc = "Ceci est une string de test! \n 32\n";
+int b = 123;
+str efc = "Ceci est une deuxième string de test! \n";
+a = 2 + b;

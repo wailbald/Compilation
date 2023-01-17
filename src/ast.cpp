@@ -244,25 +244,44 @@ std::vector<Token> gen_body_vect(std::vector<Token> basetok)
 			
 		if(elem.get_type() == RBRCKT)
 			brckt_depth--;
-		body_tok.push_back(elem);
 		if(!brckt_depth)
 			return body_tok;
+		body_tok.push_back(elem);
+		
 	}
 	printf("Error: Unexpected End Of File\n");
 	exit(6);
 	return body_tok;
 }
 
-NewNode& make_if_node(std::vector<Token> tok,location loc)
+Expr * make_identifier(Token tok)
 {
+	return new Identifier(tok.get_loc(),tok.get_text());
+}
+
+Expr * make_integer_literal(Token tok)
+{
+	return new IntegerLiteral(tok.get_loc(),atol(tok.get_text().c_str()));
+}
+
+Expr * make_string_literal(Token tok)
+{
+	return new StringLiteral(tok.get_loc() ,tok.get_text());
+}
+
+Expr* make_if(std::vector<Token> tok)
+{
+	location if_location=tok[0].get_loc();
+	tok.erase(tok.begin(),tok.begin()+1);
+	
 	std::smatch match;
 	std::vector<Token> cond_tok = gen_cond_vect(tok);
 	Expr *cond_part = parse_token(cond_tok);
-	tok.erase(tok.begin(),tok.begin()+cond_tok.size());
+	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
 	
 	std::vector<Token> body_tok = gen_body_vect(tok);
 	Expr *body_part = parse_token(body_tok);
-	tok.erase(tok.begin(),tok.begin()+body_tok.size());
+	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
@@ -272,14 +291,39 @@ NewNode& make_if_node(std::vector<Token> tok,location loc)
 		Expr *else_part = parse_token(else_tok);
 		tok.erase(tok.begin(),tok.begin()+else_tok.size());
 
-		IfThenElse ite(loc,cond_part,body_part,else_part);
+		IfThenElse* ite = new IfThenElse(if_location,cond_part,body_part,else_part);
 		return ite;
 	}
 	else
 	{
-		IfThenElse ite2(loc,cond_part,body_part);
-		return ite2;
+		IfThenElse* ite = new IfThenElse(if_location,cond_part,body_part);
+		return ite;
 	}
+}
+
+Expr *make_while_loop(std::vector<Token> tok)
+{
+	location while_location=tok[0].get_loc();
+	tok.erase(tok.begin(),tok.begin()+1);
+
+	std::vector<Token> cond_tok = gen_cond_vect(tok);
+	Expr * cond_part = parse_token(cond_tok);
+	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
+	
+	std::vector<Token> body_tok = gen_body_vect(tok);
+	Expr *body_part = parse_token(body_tok);
+	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
+
+	WhileLoop* wl = new WhileLoop(while_location,cond_part,body_part);
+	return wl;
+}
+
+Expr * make_assign(std::vector<Token> tok)
+{
+
+	Identifier * id = (Identifier*)make_identifier(tok[0]);
+
+
 }
 
 Expr * parse_token(std::vector<Token> tok)
@@ -288,7 +332,7 @@ Expr * parse_token(std::vector<Token> tok)
 	return abc;
 }
 
-Tree &parser(std::vector<Token> tok)
+Tree parser(std::vector<Token> tok)
 {
 	Expr* root = parse_token(tok);
 }

@@ -4,6 +4,7 @@
 #include "lexer.hpp"
 #include <vector>
 #include <cstdint>
+#include <cstdlib>
 
 class Node
 {
@@ -49,7 +50,7 @@ class NewNode{
 public:
 	location loc;
 	NewNode() {};
-	NewNode(location &loc_) : loc(loc_){};
+	NewNode(location loc_) : loc(loc_){};
 
 	void accept(visitor v);
 };
@@ -66,7 +67,7 @@ public:
 	Type type;
 	int depth = -1;
 
-	Decl(location &loc_,std::string &_name,Type &_type, int depth_ = -1)
+	Decl(location loc_,std::string _name,Type _type, int depth_ = -1)
       : Expr(loc_), name(_name), type(_type), depth(depth_) {};
 
     void set_depth(int _depth) {
@@ -81,7 +82,7 @@ class IntegerLiteral : public Expr {
 public:
 	int32_t value;
 
-	IntegerLiteral(location &loc_,int32_t &_value)
+	IntegerLiteral(location loc_,int32_t _value)
       : Expr(loc_), value(_value) {};
 
 };
@@ -90,7 +91,7 @@ class StringLiteral : public Expr{
 public:
 	std::string value;
 
-	StringLiteral(location &loc_,std::string &value_)
+	StringLiteral(location loc_ ,std::string value_)
       : Expr(loc_), value(value_) {};
 
 };
@@ -103,7 +104,7 @@ public:
   Operation op;
 
   // Constructor
-  BinaryOperator(location &_loc, Expr *_left, Expr *_right,Operation &_op)
+  BinaryOperator(location _loc, Expr *_left, Expr *_right,Operation _op)
       : Expr(_loc), left(_left), right(_right), op(_op) {};
 
   // Destructor
@@ -120,7 +121,7 @@ public:
   	std::vector<Expr *> exprs;
 
   public:
-  	Sequence(location &_loc, std::vector<Expr *> &_exprs)
+  	Sequence(location _loc, std::vector<Expr *> _exprs)
       : Expr(_loc), exprs(_exprs) {};
 
   	virtual ~Sequence() {
@@ -138,7 +139,7 @@ class Identifier : public Expr {
 public:
   	std::string name;
 
-	Identifier(location &_loc, std::string &_name)
+	Identifier(location _loc, std::string _name)
   		: Expr(_loc), name(_name) {};
 
   	void set_decl(Decl *_decl){
@@ -161,10 +162,10 @@ class IfThenElse : public Expr{
 	Expr * else_part;
 
 public:
-	IfThenElse(location &_loc, Expr *_condition, Expr *_then_part,Expr *_else_part)
+	IfThenElse(location _loc, Expr *_condition, Expr *_then_part,Expr *_else_part)
       : Expr(_loc), condition(_condition), then_part(_then_part), else_part(_else_part) {}
 
-    IfThenElse(location &_loc, Expr *_condition, Expr *_then_part)
+    IfThenElse(location _loc, Expr *_condition, Expr *_then_part)
       : Expr(_loc), condition(_condition), then_part(_then_part) {}
 
     virtual ~IfThenElse() {
@@ -183,7 +184,7 @@ class VarDecl : public Decl {
 	bool escapes = false;
 
 public:
-	VarDecl(location &_loc, std::string &_name, Type &_type_name, Expr *_expr)
+	VarDecl(location _loc, std::string _name, Type _type_name, Expr *_expr)
 	: Decl(_loc, _name, _type_name), expr(_expr){};
 
 	virtual ~VarDecl() { delete expr; };
@@ -202,7 +203,7 @@ class FunDecl : public Decl {
 	std::string name;
 
 public:
-	FunDecl(location &_loc, std::string &_name, Type &_type_name, std::vector<VarDecl *> &_params, Expr *_expr)
+	FunDecl(location _loc, std::string _name, Type _type_name, std::vector<VarDecl *> _params, Expr *_expr)
 	: Decl(_loc, _name, _type_name), params(_params), expr(_expr) {};
 
 	virtual ~FunDecl() {
@@ -223,7 +224,7 @@ class FunCall : public Expr {
 public:
 	std::string func_name;
 
-	FunCall(location &_loc, std::vector<Expr *> &_args, std::string &_func_name)
+	FunCall(location _loc, std::vector<Expr *> _args, std::string _func_name)
 	: Expr(_loc), args(_args), func_name(_func_name) {};
 
 	virtual ~FunCall() {
@@ -243,7 +244,7 @@ public:
 
 class Loop : public Expr{
 public:
-	Loop(location &_loc) : Expr(_loc) {};
+	Loop(location _loc) : Expr(_loc) {};
 };
 
 class WhileLoop : public Loop{
@@ -251,7 +252,7 @@ class WhileLoop : public Loop{
 	Expr *body;
 
 public:
-	WhileLoop(location &_loc, Expr *_condition, Expr *_body)
+	WhileLoop(location _loc, Expr *_condition, Expr *_body)
 	: Loop(_loc), condition(_condition), body(_body) {};
 
 	virtual ~WhileLoop() {
@@ -269,7 +270,7 @@ class ForLoop : public Loop {
 	Expr *body;
 
 public:
-	ForLoop(location &_loc, VarDecl *_variable, Expr *_high, Expr *_body)
+	ForLoop(location _loc, VarDecl *_variable, Expr *_high, Expr *_body)
       : Loop(_loc), variable(_variable), high(_high), body(_body) {};
 
     virtual ~ForLoop() {
@@ -286,7 +287,7 @@ public:
 class Break : public Expr {
 	Loop * loop = nullptr;
 public:
-	Break(location &_loc) : Expr(_loc){};
+	Break(location _loc) : Expr(_loc){};
 	void set_loop(Loop *_loop){
 		if(!loop && _loop)
 			loop = _loop;
@@ -299,7 +300,7 @@ class Assign : public Expr{
 	Identifier *lhs;
 	Expr *rhs;
 
-	Assign(location &_loc, Identifier *_lhs, Expr *_rhs)
+	Assign(location _loc, Identifier *_lhs, Expr *_rhs)
 	: Expr(_loc), lhs(_lhs), rhs(_rhs) {};
 
 	virtual ~Assign() {
@@ -311,10 +312,11 @@ class Assign : public Expr{
   	Expr &get_rhs(){return *rhs;};
 };
 
-Tree &parser(std::vector<Token> tok);
-Expr * parse_token(std::vector<Token> tok);
+Tree parser(std::vector<Token> tok);
+Expr *parse_token(std::vector<Token> tok);
 
 std::vector<Token> gen_cond_vect(std::vector<Token> basetok);
 std::vector<Token> gen_body_vect(std::vector<Token> basetok);
 
-NewNode& make_if_node(std::vector<Token> tok);
+Expr *make_if_node(std::vector<Token> tok, location loc);
+Expr *make_while_node(std::vector<Token> tok, location loc);
