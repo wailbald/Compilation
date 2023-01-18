@@ -21,6 +21,77 @@ int assign_check_type(Token t)
 	exit(3);
 }
 
+std::vector<Token> negatif(std::vector<Token> tok)
+{
+	int i = 0;
+
+	while(tok[i].get_type() != EOF_)
+	{
+		if(tok[i].get_type() == MINUS)
+		{
+			if(tok[i-1].get_type() != RPAREN || tok[i-1].get_type() != ID || tok[i-1].get_type() != STR 
+				|| tok[i-1].get_type() != CHAR || tok[i-1].get_type() != INT || tok[i-1].get_type() != DOUBLE)
+			{
+				if(tok[i+1].get_type() == LPAREN)
+				{
+					int cpt = 1;
+					int j = i+2;
+					while(cpt != 0)
+					{
+						if(tok[j].get_type() == LPAREN)
+							cpt++;
+
+						if(tok[j].get_type() == RPAREN)
+							cpt--;
+
+						j++;
+					}
+					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
+				}
+				else
+				{
+					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
+				}
+
+				tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
+				tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
+			}
+		}
+		i++;
+	}
+
+	return tok;
+}
+
+/*
+%nonassoc FUNCTION VAR TYPE DO OF ASSIGN;
+%left OR;
+%left AND;
+%nonassoc EQ NEG GT GE LE LT;
+%left PLUS MINUS;
+%left TIMES DIVIDE;
+%left UMINUS;
+*/
+
+int priorite(Token tok)
+{
+	if(tok.get_type() == TIMES || tok.get_type() == DIVIDE)
+		return 5;
+
+	if(tok.get_type() == PLUS || tok.get_type() == MINUS)
+		return 4;
+
+	if(tok.get_type() == EQ || tok.get_type() == NEG || tok.get_type() == GT 
+		|| tok.get_type() == GE || tok.get_type() == LE || tok.get_type() == LT)
+		return 3;
+
+	if(tok.get_type() == AND)
+		return 2;
+
+	if(tok.get_type() == OR)
+		return 1;
+}
+
 int verif_assign(std::vector<Token> tok, int i, int nb, int *taille)
 {
 	int max = 0;
@@ -371,7 +442,7 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 
 		else
 		{
-			
+
 		}
 	}
 }
