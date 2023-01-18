@@ -336,3 +336,42 @@ Tree parser(std::vector<Token> tok)
 {
 	Expr* root = parse_token(tok);
 }
+
+Tree math_expr(std::vector<Token> tok, int i)
+{
+
+}
+
+std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
+{
+	std::vector<Token> out;
+	std::vector<Token> stack;
+
+	while(tok[i].get_type() != SEMICOLON)
+	{
+		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
+			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
+		{
+			out.push_back(tok[i]);
+		}
+
+		if(tok[i].get_type() == LPAREN)
+		{
+			stack.push_back(tok[i]);
+		}
+
+		if(tok[i].get_type() == RPAREN)
+		{
+			while(stack.back().get_type() != LPAREN)
+			{
+				out.push_back(stack.back());
+				stack.pop_back();
+			}
+		}
+
+		else
+		{
+			
+		}
+	}
+}
