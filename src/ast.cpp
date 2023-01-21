@@ -223,45 +223,10 @@ Tree create_assign(std::vector<Token> tok, int i)
 	
 	//création de la partie droite de l'arbre
 
-	int tmp = i+(*taille);
-	int paren = 0;
+	std::vector<Token> npi = turntoNPI(tok,i+nb+1);
 
-	for(int j = 0; j < max; j++)
-	{
-		while(tmp != i)
-		{
-			if(tok[tmp].get_type() == LPAREN)
-				paren ++;
-				
-			if(tok[tmp].get_type() == RPAREN)
-				paren --;
-			
-			if((tok[tmp].get_type() == PLUS || tok[tmp].get_type() == MINUS) && paren == j)
-			{
-				
-			}
-			
-			tmp --;
-		}
-		
-		tmp = i+(*taille);
-		
-		while(tmp != i)
-		{
-			if(tok[tmp].get_type() == LPAREN)
-				paren ++;
-				
-			if(tok[tmp].get_type() == RPAREN)
-				paren --;
-			
-			if((tok[tmp].get_type() == TIMES || tok[tmp].get_type() == DIVIDE) && paren == j)
-			{
-				
-			}
-			
-			tmp --;
-		}
-	}
+	Node n3 = math_expr(&npi,npi.size());
+	tree.add_right(&n3);
 
 	std::cout << "fini" << std::endl;
 
@@ -408,10 +373,6 @@ Tree parser(std::vector<Token> tok)
 	Expr* root = parse_token(tok);
 }
 
-Tree math_expr(std::vector<Token> tok, int i)
-{
-
-}
 
 std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 {
@@ -438,11 +399,51 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 				out.push_back(stack.back());
 				stack.pop_back();
 			}
+			//on enleve la parenthese restante
+			stack.pop_back();
 		}
 
 		else
 		{
-
+			for(int j = stack.size()-1; j > 0; j--)
+			{
+				if(stack[i].get_type() == LPAREN)
+					break; 
+				else
+				{
+					if(priorite(tok[i]) < priorite(stack[j]))
+					{
+						out.push_back(stack[j]);
+						stack.erase(j);
+					}
+				}
+			}
+			stack.push_back(tok[i]);
 		}
+		i++;
+	}
+	while(!stack.empty())
+	{
+		out.push_back(stack.back());
+		stack.pop_back();
+	}
+}
+
+Node math_expr(std::vector<Token> *tok, int i)
+{	
+	int j = i-1;
+	if(assign_check_type(tok[j]) > 1)
+	{
+		Node n(tok[j]);
+		tok.erase(j);
+		n.add_left(math_expr(tok,j);
+		n.add_right(math_expr(tok,j);
+		return n;
+	}
+	else
+	{
+		Node n(tok[j])
+		tok.erase(j);
+		return n;
 	}
 }
