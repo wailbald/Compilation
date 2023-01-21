@@ -81,7 +81,7 @@ int priorite(Token tok)
 	if(tok.get_type() == PLUS || tok.get_type() == MINUS)
 		return 4;
 
-	if(tok.get_type() == EQ || tok.get_type() == NEG || tok.get_type() == GT 
+	if(tok.get_type() == EQ || tok.get_type() == NEQ || tok.get_type() == GT 
 		|| tok.get_type() == GE || tok.get_type() == LE || tok.get_type() == LT)
 		return 3;
 
@@ -90,6 +90,84 @@ int priorite(Token tok)
 
 	if(tok.get_type() == OR)
 		return 1;
+		
+	std::cout << "symbole non defini" << std::endl;
+	exit(4);
+}
+
+std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
+{
+	std::vector<Token> out;
+	std::vector<Token> stack;
+
+	while(tok[i].get_type() != SEMICOLON)
+	{
+		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
+			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
+		{
+			out.push_back(tok[i]);
+		}
+
+		if(tok[i].get_type() == LPAREN)
+		{
+			stack.push_back(tok[i]);
+		}
+
+		if(tok[i].get_type() == RPAREN)
+		{
+			while(stack.back().get_type() != LPAREN)
+			{
+				out.push_back(stack.back());
+				stack.pop_back();
+			}
+			//on enleve la parenthese restante
+			stack.pop_back();
+		}
+
+		else
+		{
+			for(int j = stack.size()-1; j > 0; j--)
+			{
+				if(stack[i].get_type() == LPAREN)
+					break; 
+				else
+				{
+					if(priorite(tok[i]) < priorite(stack[j]))
+					{
+						out.push_back(stack[j]);
+						stack.erase(stack.begin()+j);
+					}
+				}
+			}
+			stack.push_back(tok[i]);
+		}
+		i++;
+	}
+	while(!stack.empty())
+	{
+		out.push_back(stack.back());
+		stack.pop_back();
+	}
+	return out;
+}
+
+Node math_expr(std::vector<Token> *tok, int i)
+{	
+	int j = i-1;
+	if(assign_check_type(tok->back()) > 1)
+	{
+		Node n(tok->back());
+		tok->erase(tok->begin()+j);
+		n.add_left(math_expr(tok,j));
+		n.add_right(math_expr(tok,j));
+		return n;
+	}
+	else
+	{
+		Node n(tok->back());
+		tok->erase(tok->begin()+j);
+		return n;
+	}
 }
 
 int verif_assign(std::vector<Token> tok, int i, int nb, int *taille)
@@ -226,7 +304,7 @@ Tree create_assign(std::vector<Token> tok, int i)
 	std::vector<Token> npi = turntoNPI(tok,i+nb+1);
 
 	Node n3 = math_expr(&npi,npi.size());
-	tree.add_right(&n3);
+	tree.get_root()->add_right(&n3);
 
 	std::cout << "fini" << std::endl;
 
@@ -373,77 +451,3 @@ Tree parser(std::vector<Token> tok)
 	Expr* root = parse_token(tok);
 }
 
-
-std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
-{
-	std::vector<Token> out;
-	std::vector<Token> stack;
-
-	while(tok[i].get_type() != SEMICOLON)
-	{
-		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
-			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
-		{
-			out.push_back(tok[i]);
-		}
-
-		if(tok[i].get_type() == LPAREN)
-		{
-			stack.push_back(tok[i]);
-		}
-
-		if(tok[i].get_type() == RPAREN)
-		{
-			while(stack.back().get_type() != LPAREN)
-			{
-				out.push_back(stack.back());
-				stack.pop_back();
-			}
-			//on enleve la parenthese restante
-			stack.pop_back();
-		}
-
-		else
-		{
-			for(int j = stack.size()-1; j > 0; j--)
-			{
-				if(stack[i].get_type() == LPAREN)
-					break; 
-				else
-				{
-					if(priorite(tok[i]) < priorite(stack[j]))
-					{
-						out.push_back(stack[j]);
-						stack.erase(j);
-					}
-				}
-			}
-			stack.push_back(tok[i]);
-		}
-		i++;
-	}
-	while(!stack.empty())
-	{
-		out.push_back(stack.back());
-		stack.pop_back();
-	}
-}
-
-Node math_expr(std::vector<Token> *tok, int i)
-{	
-	int j = i-1;
-	if(assign_check_type(tok[j]) > 1)
-	{
-		Node n(tok[j]);
-		tok.erase(j);
-		n.add_left(math_expr(tok,j);
-		n.add_right(math_expr(tok,j);
-		return n;
-	}
-	else
-	{
-		Node n(tok[j])
-		tok.erase(j);
-		return n;
-	}
-}
