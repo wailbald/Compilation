@@ -340,6 +340,13 @@ Expr *math_expr(std::vector<Token> tok)
 			return ndou;
 		}
 		
+		case ID:
+		{
+			Expr *nid = make_identifier(tok[j]);
+			tok.erase(tok.begin()+j);
+			return nid;
+		}
+
 		default :
 		{
 			return NULL;
