@@ -109,166 +109,6 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 	return out;
 }
 
-Node math_expr(std::vector<Token> *tok, int i)
-{	
-	int j = i-1;
-	if(assign_check_type(tok->back()) > 1)
-	{
-		Node n(tok->back());
-		tok->erase(tok->begin()+j);
-		n.add_left(math_expr(tok,j));
-		n.add_right(math_expr(tok,j));
-		return n;
-	}
-	else
-	{
-		Node n(tok->back());
-		tok->erase(tok->begin()+j);
-		return n;
-	}
-}
-
-int verif_assign(std::vector<Token> tok, int i, int nb, int *taille)
-{
-	int max = 0;
-	int paren = 0;
-	
-	i += nb;
-	
-	if(nb == 2)
-	{
-		if(tok[i-nb].get_type() != DECL || tok[i-1].get_type() != ID)
-		{
-			std::cout << "Erreur lors de la déclaration de variable" << std::endl;
-			std::cout << "La déclaration de variable doit être de la forme 'type' 'nom' '=' 'valeur'" << std::endl;
-			exit(2);
-		}
-		
-		if(tok[i-1].get_type() != ID)
-		{
-			std::cout << "Erreur lors de l'assignation de variable" << std::endl;
-			std::cout << "L'assignation de variable doit être de la forme 'nom' '=' 'valeur'" << std::endl;
-			exit(2);
-		}
-	}
-	
-	if(tok[i].get_type() == LPAREN)
-		paren ++;
-		
-	if(max < paren)
-		max = paren;
-		
-	if(tok[i].get_type() == RPAREN)
-		paren --;
-		
-	if(paren < 0)
-	{
-		std::cout<< "Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
-	}
-		
-	if(tok[i+1].get_type() == LPAREN)
-		paren ++;
-		
-	if(max < paren)
-		max = paren;
-		
-	if(tok[i+1].get_type() == RPAREN)
-		paren --;
-		
-	if(paren < 0)
-	{
-		std::cout<<"Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
-	}
-	
-	i += 2;
-	
-	while(tok[i+1].get_type() != SEMICOLON)
-	{
-		if(tok[i].get_type() == LPAREN)
-			paren ++;
-		
-		if(max < paren)
-			max = paren;
-		
-		if(tok[i].get_type() == RPAREN)
-			paren --;
-			
-		if(paren < 0)
-		{
-			std::cout<<"Problème de parenthèse, une parenthèse fermante n'est pas précédé d'une parenthèse ouvrante" << std::endl;
-			exit(4);
-		}
-		
-		if(assign_check_type(tok[i]) == assign_check_type(tok[i-1]) 
-			|| assign_check_type(tok[i]) == assign_check_type(tok[i+1])
-			|| (assign_check_type(tok[i]) == 4 && assign_check_type(tok[i-1]) == 2)
-			|| (assign_check_type(tok[i]) == 4 && assign_check_type(tok[i+1]) == 2))
-		{
-			std::cout << "problème dans l'assignation, vous ne pouvez pas utiliser ces symboles à la suites" << std::endl;
-		}
-		i++;
-		taille++;
-	}
-	
-	return max;
-}
-
-Tree create_assign(std::vector<Token> tok, int i)
-{
-	//vérification du nombre de caractère avant le symbole d'assignation
-	int max = 0;
-	int *taille = 0;
-	
-	int nb1 = i;
-	while(tok[nb1].get_type() != ASSIGN)
-	{
-		nb1++;
-	}
-	
-	max = verif_assign(tok,i,i-nb1,taille);
-
-	int nb = i - nb1;
-	Node n(tok[i+nb]);
-
-	Tree tree(&n);
-	
-	//création de la partie gauche de l'arbre
-	if(nb == 2)
-	{
-		Node n1(tok[i+1]);
-		Node n2(tok[i+2]);
-
-		tree.get_root()->add_left(&n1);
-
-		Node *tmp = tree.get_root();
-		tmp = tmp->get_left();
-		tmp->add_left(&n2);
-
-		std::cout << token_name[tree.get_root()->get_left()->get_tok().get_type()] << std::endl;
-		std::cout << tree.get_root()->get_left()->get_tok().get_text() << std::endl;
-
-		std::cout<<std::endl;
-
-		std::cout << token_name[tree.get_root()->get_tok().get_type()] << std::endl;
-	}
-	if(nb == 1)
-	{
-		Node n1(tok[i+1]);
-		tree.get_root()->add_left(&n1);
-	}
-	
-	//création de la partie droite de l'arbre
-
-	std::vector<Token> npi = turntoNPI(tok,i+nb+1);
-
-	Node n3 = math_expr(&npi,npi.size());
-	tree.get_root()->add_right(&n3);
-
-	std::cout << "fini" << std::endl;
-
-	return tree;
-}
-
 std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
 {
 	int paren_depth = 1;
@@ -379,9 +219,61 @@ Expr * make_integer_literal(Token tok)
 	return new IntegerLiteral(tok.get_loc(),atol(tok.get_text().c_str()));
 }
 
+Expr * make_double_literal(Token tok)
+{
+	return new DoubleLiteral(tok.get_loc(),atol(tok.get_text().c_str()));
+}
+
 Expr * make_string_literal(Token tok)
 {
 	return new StringLiteral(tok.get_loc() ,tok.get_text());
+}
+
+Type get_decl_type(Token tok)
+{
+	if(tok.get_text() == "void")
+	{
+		return t_void;
+	}
+	if(tok.get_text() == "int")
+	{
+		return t_int;
+	}
+	if(tok.get_text() == "double")
+	{
+		return t_double;
+	}
+	if(tok.get_text() == "t_string")
+	{
+		return t_string;
+	}
+	return t_undef;
+}
+
+Decl * make_var_decl(std::vector<Token> tok)
+{
+	location decl_loc = tok[0].get_loc();
+
+	Expr * expr = NULL;
+
+	if(tok[2].get_type() == SEMICOLON)
+	{
+		tok.erase(tok.begin(),tok.begin()+2);
+	}
+	else if(tok[2].get_type() == ASSIGN)
+	{
+		tok.erase(tok.begin());
+		expr = make_assign(tok);
+	}
+	else
+	{
+		printf("Unexpected token in variable delcaration");
+		exit(5);
+	}
+
+	VarDecl * decl = new VarDecl(decl_loc,tok[1].get_text(),get_decl_type(tok[0]),expr);
+
+	return decl;
 }
 
 Expr* make_if(std::vector<Token> tok)
@@ -433,13 +325,77 @@ Expr *make_while_loop(std::vector<Token> tok)
 	return wl;
 }
 
+Expr *make_for_loop(std::vector<Token> tok)
+{
+	location for_location=tok[0].get_loc();
+	tok.erase(tok.begin(),tok.begin()+1);
+
+	Decl* decl;
+	std::string line = gen_tok_string(tok);
+	line.insert(0,"#/#");
+	std::smatch match;
+	if(tok[0].get_type() == SEMICOLON)
+	{
+		decl = NULL;
+		tok.erase(tok.begin());
+	}
+	else if(std::regex_search(line,match,pOP_regex))
+	{
+
+	}
+}
+
+Expr * parse_assign(std::vector<Token> tok)
+{	
+	std::string line = gen_tok_string(tok);
+	line.insert(0,"#/#");
+	std::smatch match;
+	Expr* expr = NULL;
+	if(std::regex_search(line,match,pOP_regex))
+	{
+		//expr = make_math_expression()
+		tok.erase(tok.begin());
+	}
+	else if(std::regex_search(line,match,pIDENTIFER_regex))
+	{
+		expr = make_identifier(tok[0]);
+		tok.erase(tok.begin());
+	}
+	else if(std::regex_search(line,match,pDOUBLELITERAL_regex))
+	{
+		expr = make_double_literal(tok[0]);
+		tok.erase(tok.begin());
+	}
+	else if(std::regex_search(line,match,pINTEGERLITERAL_regex))
+	{
+		expr = make_integer_literal(tok[0]);
+		tok.erase(tok.begin());
+	}
+	else
+	{
+		printf("Error: Wrong right part of assign expression\n");
+		exit(5);
+	}
+	return expr;
+}
+
 Expr * make_assign(std::vector<Token> tok)
 {
-
 	Identifier * id = (Identifier*)make_identifier(tok[0]);
+	tok.erase(tok.begin());
 
+	location loc = tok[0].get_loc();
+	tok.erase(tok.begin());
 
-
+	Expr* rhs = parse_assign(tok);
+	if(tok[0].get_type() == SEMICOLON)
+		tok.erase(tok.begin());
+	else
+	{
+		printf("Unexpected token after assign\n");
+		exit(5);
+	}
+	return new Assign(loc,id,rhs);
 }
 
 Expr * parse_token(std::vector<Token> tok)
@@ -448,8 +404,14 @@ Expr * parse_token(std::vector<Token> tok)
 	return abc;
 }
 
+Expr * parse_seq(std::vector<Token> tok)
+{
+	Expr* abc = new Expr();
+	return abc;
+}
+
 Tree parser(std::vector<Token> tok)
 {
-	Expr* root = parse_token(tok);
+	Expr* root = parse_seq(tok);
 }
 

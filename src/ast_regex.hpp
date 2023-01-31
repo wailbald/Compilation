@@ -14,4 +14,5 @@ static std::basic_regex<char> pOP_regex("#/#(MINUS )?(LPAREN (MINUS )?)*(INT\\{[
 
 static std::basic_regex<char> pIDENTIFER_regex("ID\\{[a-zA-Z][_0-9a-zA-Z]*\\}",std::regex_constants::egrep);
 static std::basic_regex<char> pINTEGERLITERAL_regex("INT\\{[0-9]*\\}",std::regex_constants::egrep);
+static std::basic_regex<char> pDOUBLELITERAL_regex("DOUBLE\\{([1-9][0-9]*\\.[0-9]*|0\\.0)\\}");
 static std::basic_regex<char> pSTRINGLITERAL_regex("STR\\{\".*\"\\}",std::regex_constants::egrep|std::regex_constants::nosubs);
