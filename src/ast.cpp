@@ -21,15 +21,48 @@ int assign_check_type(Token t)
 	exit(3);
 }
 
-/*
-%nonassoc FUNCTION VAR TYPE DO OF ASSIGN;
-%left OR;
-%left AND;
-%nonassoc EQ NEG GT GE LE LT;
-%left PLUS MINUS;
-%left TIMES DIVIDE;
-%left UMINUS;
-*/
+std::vector<Token> negatif(std::vector<Token> tok)
+{
+	int i = 0;
+
+	while(tok[i].get_type() != EOF_)
+	{
+		if(tok[i].get_type() == MINUS)
+		{
+			if(tok[i-1].get_type() != RPAREN || tok[i-1].get_type() != ID || tok[i-1].get_type() != STR 
+				|| tok[i-1].get_type() != CHAR || tok[i-1].get_type() != INT || tok[i-1].get_type() != DOUBLE)
+			{
+				if(tok[i+1].get_type() == LPAREN)
+				{
+					int cpt = 1;
+					int j = i+2;
+					while(cpt != 0)
+					{
+						if(tok[j].get_type() == LPAREN)
+							cpt++;
+
+						if(tok[j].get_type() == RPAREN)
+							cpt--;
+
+						j++;
+					}
+					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
+				}
+				else
+				{
+					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
+				}
+				
+				tok.insert(tok.begin()+i,Token(MINUS,(location){0,0}));
+				tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
+				tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
+			}
+		}
+		i++;
+	}
+
+	return tok;
+}
 
 int priorite(Token tok)
 {
@@ -64,11 +97,13 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
 		{
 			out.push_back(tok[i]);
+			tok.erase(tok.begin()+i);
 		}
 
 		if(tok[i].get_type() == LPAREN)
 		{
 			stack.push_back(tok[i]);
+			tok.erase(tok.begin()+i);
 		}
 
 		if(tok[i].get_type() == RPAREN)
@@ -98,6 +133,7 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 				}
 			}
 			stack.push_back(tok[i]);
+			tok.erase(tok.begin()+i);
 		}
 		i++;
 	}
@@ -107,6 +143,208 @@ std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
 		stack.pop_back();
 	}
 	return out;
+}
+
+Expr *math_expr(std::vector<Token> tok)
+{	
+	size_t j = tok.size();
+	location l;
+	Operation op;
+	auto k = tok[j].get_type();
+		
+	switch(k)
+	{
+		
+		case PLUS: 
+		{
+			l = tok[j].get_loc();
+			op = o_plus;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *np = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return np;
+		}
+				
+		case MINUS: 
+		{
+			l = tok[j].get_loc();
+			op = o_minus;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nm = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nm;
+		}
+				
+		case TIMES: 
+		{
+			l = tok[j].get_loc();
+			op = o_mult;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nt;
+		}
+				
+		case DIVIDE: 
+		{
+			l = tok[j].get_loc();
+			op = o_div;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nd = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nd;
+		}
+				
+		case MODULE: 
+		{
+			l = tok[j].get_loc();
+			op = o_module;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nmo = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nmo;
+		}
+				
+		case LSHIFT: 
+		{
+			l = tok[j].get_loc();
+			op = o_lshift;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nls = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nls;
+		}
+				
+		case RSHIFT: 
+		{
+			l = tok[j].get_loc();
+			op = o_rshift;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nrs = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nrs;
+		}
+				
+		case AND: 
+		{
+			l = tok[j].get_loc();
+			op = o_and;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nand = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nand;
+		}
+				
+		case OR: 
+		{
+			l = tok[j].get_loc();
+			op = o_or;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nor;
+		}
+				
+		case XOR:
+		{ 
+			l = tok[j].get_loc();
+			op = o_xor;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nxor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nxor;
+		}
+				
+		case COMP: 
+		{
+			l = tok[j].get_loc();
+			op = o_comp;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nco = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nco;
+		}
+				
+		case EQ: 
+		{
+			l = tok[j].get_loc();
+			op = c_eq;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *neq = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return neq;
+		}
+				
+		case NEQ: 
+		{
+			l = tok[j].get_loc();
+			op = c_neq;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nneq = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nneq;
+		}
+				
+		case LT: 
+		{
+			l = tok[j].get_loc();
+			op = c_lt;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nlt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nlt;
+		}
+				
+		case GT: 
+		{
+			l = tok[j].get_loc();
+			op = c_gt;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *ngt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return ngt;
+		}
+				
+		case LE: 
+		{
+			l = tok[j].get_loc();
+			op = c_le;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nle = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nle;
+		}
+				
+		case GE: 
+		{
+			l = tok[j].get_loc();
+			op = c_ge;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nge = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nge;
+		}
+				
+		case CAND: 
+		{
+			l = tok[j].get_loc();
+			op = c_and;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *ncand = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return ncand;
+		}
+				
+		case COR: 
+		{
+			l = tok[j].get_loc();
+			op = c_or;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *ncor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return ncor;
+		}
+				
+		case INT:
+		{
+			Expr *nint = make_integer_literal(tok[j]);
+			tok.erase(tok.begin()+j);
+			return nint;
+		}
+				
+		case DOUBLE:
+		{
+			Expr *ndou = make_double_literal(tok[j]);
+			tok.erase(tok.begin()+j);
+			return ndou;
+		}
+		
+		default :
+		{
+			return NULL;
+		}
+	}
 }
 
 std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
