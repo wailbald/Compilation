@@ -593,7 +593,7 @@ Expr *make_for_loop(std::vector<Token> tok)
 	}
 
 	Expr *cond = make_mathematical_expression(tok);
-	tok.erase(tok.begin);
+	tok.erase(tok.begin());
 
 	Expr *high = make_mathematical_expression(tok);
 	if(tok[0].get_type()!= RPAREN)
@@ -601,7 +601,7 @@ Expr *make_for_loop(std::vector<Token> tok)
 		printf("Error, expected RPAREN token\n");
 		exit(5);
 	}
-	tok.erase(tok.begin);
+	tok.erase(tok.begin());
 	std::vector<Token> body_tok = gen_body_vect(tok);
 	Expr *body = parse_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);	
