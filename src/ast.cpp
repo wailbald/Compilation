@@ -203,6 +203,49 @@ std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
 	std::vector<Token> cond_tok;
 	for(auto elem : basetok)
 	{
+		switch (elem.get_type())
+		{
+			case(LBRACE):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(RBRACE):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(SEMICOLON):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(COLON):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(IF):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(ELSE):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(WHILE):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(FOR):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(RETURN):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(DO):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(BREAK):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(CONTINUE):
+				printf("Error: Unexpected Token in condition\n");
+				exit(6);
+			case(EOF_):
+				printf("Error: Unexpected End Of File in a condition\n");
+				exit(6);
+			default: break;
+		}
 		if(elem.get_type() == LPAREN)
 			paren_depth++;
 		if(elem.get_type() == RPAREN)
@@ -322,6 +365,7 @@ Expr * make_assign(std::vector<Token> tok)
 {
 
 	Identifier * id = (Identifier*)make_identifier(tok[0]);
+
 
 
 }

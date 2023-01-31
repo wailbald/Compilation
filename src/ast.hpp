@@ -87,6 +87,15 @@ public:
 
 };
 
+class DoubleLiteral : public Expr {
+public:
+	double value;
+
+	DoubleLiteral(location loc_,double _value)
+      : Expr(loc_), value(_value) {};
+
+};
+
 class StringLiteral : public Expr{
 public:
 	std::string value;

@@ -3,7 +3,7 @@ int c = a
 	- b;
 int d = 0;
 d = a * 2;
-c = 2 * (4 + 5);
+c = 2 * (-4 + 5) + 4 + 8 / 4;
 int e;
 double f = 20.2;
 e = (d / a);
