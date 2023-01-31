@@ -348,6 +348,8 @@ Expr * make_double_literal(Token tok);
 Expr * make_string_literal(Token tok);
 Decl * make_var_decl(std::vector<Token> tok);
 
+Expr * make_mathematical_expression
+
 Expr* make_if(std::vector<Token> tok);
 
 Expr *make_while_loop(std::vector<Token> tok);

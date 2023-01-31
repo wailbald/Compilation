@@ -68,10 +68,11 @@ int priorite(Token tok)
 	exit(4);
 }
 
-std::vector<Token> turntoNPI(std::vector<Token> tok, int i)
+std::vector<Token> turntoNPI(std::vector<Token> tok)
 {
 	std::vector<Token> out;
 	std::vector<Token> stack;
+	int i = 0;
 
 	while(tok[i].get_type() != SEMICOLON)
 	{
@@ -463,6 +464,13 @@ Expr * make_double_literal(Token tok)
 Expr * make_string_literal(Token tok)
 {
 	return new StringLiteral(tok.get_loc() ,tok.get_text());
+}
+
+Expr * make_mathematical_expression(std::vector<Token> tok)
+{
+	std::vector<Token> npi = negatif(tok);
+	npi = turntoNPI(npi);
+	return math_expr(npi);
 }
 
 Type get_decl_type(Token tok)
