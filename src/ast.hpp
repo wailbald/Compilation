@@ -298,7 +298,7 @@ class ForLoop : public Loop {
 	Expr *body;
 
 public:
-	ForLoop(location _loc, VarDecl *_variable, Expr* _cond,Expr *_high, Expr *_body)
+	ForLoop(location _loc, Expr *_variable, Expr* _cond,Expr *_high, Expr *_body)
       : Loop(_loc), variable(_variable), cond(_cond),high(_high), body(_body) {};
 
     virtual ~ForLoop() {

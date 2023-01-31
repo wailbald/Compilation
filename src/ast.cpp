@@ -527,11 +527,11 @@ Expr* make_if(std::vector<Token> tok)
 	
 	std::smatch match;
 	std::vector<Token> cond_tok = gen_cond_vect(tok);
-	Expr *cond_part = parse_token(cond_tok);
+	Expr *cond_part = make_mathematical_expression(cond_tok);
 	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
 	
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body_part = parse_token(body_tok);
+	Expr *body_part = parse_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	std::string line = gen_tok_string(tok);
@@ -539,7 +539,7 @@ Expr* make_if(std::vector<Token> tok)
 	if(std::regex_search(line,match,pELSEPART_regex))
 	{
 		std::vector<Token> else_tok = gen_body_vect(tok);
-		Expr *else_part = parse_token(else_tok);
+		Expr *else_part = parse_seq(else_tok);
 		tok.erase(tok.begin(),tok.begin()+else_tok.size());
 
 		IfThenElse* ite = new IfThenElse(if_location,cond_part,body_part,else_part);
@@ -558,11 +558,11 @@ Expr *make_while_loop(std::vector<Token> tok)
 	tok.erase(tok.begin(),tok.begin()+1);
 
 	std::vector<Token> cond_tok = gen_cond_vect(tok);
-	Expr * cond_part = parse_token(cond_tok);
+	Expr * cond_part = make_mathematical_expression(cond_tok);
 	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
 	
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body_part = parse_token(body_tok);
+	Expr *body_part = parse_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	WhileLoop* wl = new WhileLoop(while_location,cond_part,body_part);
@@ -592,9 +592,21 @@ Expr *make_for_loop(std::vector<Token> tok)
 		decl = make_var_decl(tok);
 	}
 
-	Expr *cond = math_expr(tok);
+	Expr *cond = make_mathematical_expression(tok);
 	tok.erase(tok.begin);
 
+	Expr *high = make_mathematical_expression(tok);
+	if(tok[0].get_type()!= RPAREN)
+	{
+		printf("Error, expected RPAREN token\n");
+		exit(5);
+	}
+	tok.erase(tok.begin);
+	std::vector<Token> body_tok = gen_body_vect(tok);
+	Expr *body = parse_seq(body_tok);
+	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);	
+
+	return new ForLoop(for_location, decl, cond, high, body);
 }
 
 Expr * parse_assign(std::vector<Token> tok)
@@ -605,24 +617,9 @@ Expr * parse_assign(std::vector<Token> tok)
 	Expr* expr = NULL;
 	if(std::regex_search(line,match,pOP_regex))
 	{
-		expr = math_expr(tok);
+		expr = make_mathematical_expression(tok);
 		tok.erase(tok.begin());
 	}
-	/*else if(std::regex_search(line,match,pIDENTIFER_regex))
-	{
-		expr = make_identifier(tok[0]);
-		tok.erase(tok.begin());
-	}
-	else if(std::regex_search(line,match,pDOUBLELITERAL_regex))
-	{
-		expr = make_double_literal(tok[0]);
-		tok.erase(tok.begin());
-	}
-	else if(std::regex_search(line,match,pINTEGERLITERAL_regex))
-	{
-		expr = make_integer_literal(tok[0]);
-		tok.erase(tok.begin());
-	}*/
 	else
 	{
 		printf("Error: Wrong right part of assign expression\n");
