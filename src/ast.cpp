@@ -1,26 +1,5 @@
 #include "ast.hpp"
 
-int assign_check_type(Token t)
-{
-	if(t.get_type() == ID || t.get_type() == STR || t.get_type() == CHAR
-	|| t.get_type() == INT|| t.get_type() == DOUBLE)
-		return 1;
-
-	if(t.get_type() == PLUS || t.get_type() ==  MINUS||t.get_type() ==  TIMES||t.get_type() == DIVIDE 
-	|| t.get_type() == MODULE|| t.get_type() == LSHIFT|| t.get_type() == RSHIFT ||t.get_type() == XOR)
-		return 2;
-		
-	if(t.get_type() == LPAREN || t.get_type() == RPAREN)
-		return 3;
-
-	if(t.get_type() == EQ || t.get_type() == NEQ || t.get_type() == LT || t.get_type() == GT ||
-		t.get_type() == LE || t.get_type() == GE || t.get_type() == CAND || t.get_type() == COR)
-		return 4;
-		
-	std::cout << "Certains symbole de l'assignation ne sont pas pris en charge" << std::endl;
-	exit(3);
-}
-
 std::vector<Token> negatif(std::vector<Token> tok)
 {
 	int i = 0;
@@ -570,11 +549,6 @@ Expr *make_while_loop(std::vector<Token> tok)
 	return wl;
 }
 
-Expr * parse_for_cond(std::vector<Token> tok)
-{
-
-}
-
 Expr *make_for_loop(std::vector<Token> tok)
 {
 	location for_location=tok[0].get_loc();
@@ -598,7 +572,8 @@ Expr *make_for_loop(std::vector<Token> tok)
 		decl = make_var_decl(tok);
 	}
 
-	Expr *cond = parse_for_cond(tok);
+	Expr *cond = math_expr(tok);
+	tok.erase(tok.begin);
 
 }
 
@@ -610,10 +585,10 @@ Expr * parse_assign(std::vector<Token> tok)
 	Expr* expr = NULL;
 	if(std::regex_search(line,match,pOP_regex))
 	{
-		//expr = make_math_expression()
+		expr = math_expr(tok);
 		tok.erase(tok.begin());
 	}
-	else if(std::regex_search(line,match,pIDENTIFER_regex))
+	/*else if(std::regex_search(line,match,pIDENTIFER_regex))
 	{
 		expr = make_identifier(tok[0]);
 		tok.erase(tok.begin());
@@ -627,7 +602,7 @@ Expr * parse_assign(std::vector<Token> tok)
 	{
 		expr = make_integer_literal(tok[0]);
 		tok.erase(tok.begin());
-	}
+	}*/
 	else
 	{
 		printf("Error: Wrong right part of assign expression\n");

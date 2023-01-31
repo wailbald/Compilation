@@ -293,20 +293,23 @@ public:
 
 class ForLoop : public Loop {
 	Expr *variable;
+	Expr *cond;
 	Expr *high;
 	Expr *body;
 
 public:
-	ForLoop(location _loc, VarDecl *_variable, Expr *_high, Expr *_body)
-      : Loop(_loc), variable(_variable), high(_high), body(_body) {};
+	ForLoop(location _loc, VarDecl *_variable, Expr* _cond,Expr *_high, Expr *_body)
+      : Loop(_loc), variable(_variable), cond(_cond),high(_high), body(_body) {};
 
     virtual ~ForLoop() {
 	    delete body;
+	    delete cond;
 	    delete high;
 	    delete variable;
   	}
 
   	Expr *get_variable() {return variable;};
+  	Expr *get_cond() {return cond;};
   	Expr *get_high() {return high;};
   	Expr *get_body(){return body;};
 };
