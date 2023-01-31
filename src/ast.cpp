@@ -1,26 +1,5 @@
 #include "ast.hpp"
 
-int assign_check_type(Token t)
-{
-	if(t.get_type() == ID || t.get_type() == STR || t.get_type() == CHAR
-	|| t.get_type() == INT|| t.get_type() == DOUBLE)
-		return 1;
-
-	if(t.get_type() == PLUS || t.get_type() ==  MINUS||t.get_type() ==  TIMES||t.get_type() == DIVIDE 
-	|| t.get_type() == MODULE|| t.get_type() == LSHIFT|| t.get_type() == RSHIFT ||t.get_type() == XOR)
-		return 2;
-		
-	if(t.get_type() == LPAREN || t.get_type() == RPAREN)
-		return 3;
-
-	if(t.get_type() == EQ || t.get_type() == NEQ || t.get_type() == LT || t.get_type() == GT ||
-		t.get_type() == LE || t.get_type() == GE || t.get_type() == CAND || t.get_type() == COR)
-		return 4;
-		
-	std::cout << "Certains symbole de l'assignation ne sont pas pris en charge" << std::endl;
-	exit(3);
-}
-
 std::vector<Token> negatif(std::vector<Token> tok)
 {
 	int i = 0;
@@ -66,6 +45,9 @@ std::vector<Token> negatif(std::vector<Token> tok)
 
 int priorite(Token tok)
 {
+	if(tok.get_type() == NOT || tok.get_type() == COMP)
+		return 6;
+	
 	if(tok.get_type() == TIMES || tok.get_type() == DIVIDE)
 		return 5;
 
@@ -252,6 +234,15 @@ Expr *math_expr(std::vector<Token> tok)
 			tok.erase(tok.begin()+j);
 			BinaryOperator *nco = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
 			return nco;
+		}
+		
+		case NOT: 
+		{
+			l = tok[j].get_loc();
+			op = o_not;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nnot = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nnot;
 		}
 				
 		case EQ: 

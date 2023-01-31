@@ -41,8 +41,8 @@ Tree create_assign(std::vector<Token> tok, int i);
 typedef enum { t_undef = 0, t_int, t_double, t_string, t_void, t_tab } Type;
 static std::string type_name[] = {"t_undef","int","string","void","tab"};
 
-typedef enum { o_plus, o_minus, o_div, o_mult, o_module, o_lshift, o_rshift, o_and, o_or, o_xor, o_comp, c_eq, c_neq, c_lt, c_gt, c_le, c_ge, c_and, c_or} Operation;
-static std::string operation_name[] = { "+", "-", "/", "*", "%", "<<", ">>", "&", "|", "^", "~", "==", "!=", "<", ">", "<=", ">=", "&&", "||"};
+typedef enum { o_plus, o_minus, o_div, o_mult, o_module, o_lshift, o_rshift, o_and, o_or, o_xor, o_comp, o_not, c_eq, c_neq, c_lt, c_gt, c_le, c_ge, c_and, c_or} Operation;
+static std::string operation_name[] = { "+", "-", "/", "*", "%", "<<", ">>", "&", "|", "^", "~", "!", "==", "!=", "<", ">", "<=", ">=", "&&", "||"};
 
 class visitor{};
 
