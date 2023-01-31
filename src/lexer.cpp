@@ -341,6 +341,13 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 			*col_num= *col_num + match.length() - 3;
 			continue;
 		}
+		if(std::regex_search(line,match,NOT_regex))
+		{
+			tok_line.push_back(Token(NOT,(location){*line_num,*col_num}));
+			line.erase(match.position(),match.length());
+			*col_num= *col_num + match.length() - 3;
+			continue;
+		}
 		if(std::regex_search(line,match,COMP_regex))
 		{
 			tok_line.push_back(Token(COMP,(location){*line_num,*col_num}));

@@ -30,6 +30,7 @@ enum token_t {
 	AND,		// &
 	OR,			// |
 	XOR,		// ^
+	NOT,		// !
 	COMP,		// ~
 
 	/* Comparaison Operator */
@@ -99,6 +100,7 @@ static std::string token_name[] =
 	"AND",			// &
 	"OR",			// |
 	"XOR",			// ^
+	"NOT",			//!
 	"COMP",			// ~
 
 	/* Comparaison Operator */

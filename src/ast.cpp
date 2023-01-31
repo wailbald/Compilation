@@ -563,12 +563,17 @@ Expr *make_while_loop(std::vector<Token> tok)
 	return wl;
 }
 
+Expr * parse_for_cond(std::vector<Token> tok)
+{
+
+}
+
 Expr *make_for_loop(std::vector<Token> tok)
 {
 	location for_location=tok[0].get_loc();
 	tok.erase(tok.begin(),tok.begin()+1);
 
-	Decl* decl = NULL;
+	Expr* decl = NULL;
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
 	std::smatch match;
@@ -586,7 +591,7 @@ Expr *make_for_loop(std::vector<Token> tok)
 		decl = make_var_decl(tok);
 	}
 
-	Expr *cond = parse_for_cond
+	Expr *cond = parse_for_cond(tok);
 
 }
 

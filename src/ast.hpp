@@ -134,7 +134,7 @@ public:
 
   // Constructor
   UnaryOperator(location _loc, Expr *_expr,Operation _op)
-      : Expr(_loc), Expr(_expr), op(_op) {};
+      : Expr(_loc), expr(_expr), op(_op) {};
 
   // Destructor
   virtual ~UnaryOperator() {

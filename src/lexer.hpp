@@ -66,6 +66,7 @@ static std::basic_regex<char> RSHIFT_regex("#/#>>",std::regex_constants::grep);
 static std::basic_regex<char> AND_regex("#/#&",std::regex_constants::grep);
 static std::basic_regex<char> OR_regex("#/#|",std::regex_constants::grep);
 static std::basic_regex<char> XOR_regex("#/#^",std::regex_constants::grep);
+static std::basic_regex<char> NOT_regex("#/#!",std::regex_constants::grep);
 static std::basic_regex<char> COMP_regex("#/#~",std::regex_constants::grep);
 
 // Identifiers
