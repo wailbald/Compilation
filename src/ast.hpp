@@ -38,7 +38,7 @@ int verif_assign(std::vector<Token> tok, int i);
 Tree create_assign(std::vector<Token> tok, int i);
 
 
-typedef enum { t_undef = 0, t_int, t_string, t_void, t_tab } Type;
+typedef enum { t_undef = 0, t_int, t_double, t_string, t_void, t_tab } Type;
 static std::string type_name[] = {"t_undef","int","string","void","tab"};
 
 typedef enum { o_plus, o_minus, o_div, o_mult, o_module, o_lshift, o_rshift, o_and, o_or, o_xor, o_comp, c_eq, c_neq, c_lt, c_gt, c_le, c_ge, c_and, c_or} Operation;
@@ -87,6 +87,15 @@ public:
 
 };
 
+class DoubleLiteral : public Expr {
+public:
+	double value;
+
+	DoubleLiteral(location loc_,double _value)
+      : Expr(loc_), value(_value) {};
+
+};
+
 class StringLiteral : public Expr{
 public:
 	std::string value;
@@ -113,8 +122,8 @@ public:
     delete left;
   };
 
-  Expr &get_left(){return *left;};
-  Expr &get_right(){return *right;};
+  Expr *get_left(){return left;};
+  Expr *get_right(){return right;};
 };
 
   class Sequence : public Expr{
@@ -129,7 +138,7 @@ public:
       delete expr;
   	}
 
-  	std::vector<Expr *> &get_exprs() { return exprs; };
+  	std::vector<Expr *> get_exprs() { return exprs; };
   };
 
 class Identifier : public Expr {
@@ -174,23 +183,23 @@ public:
 	    delete condition;
   	};
 
-  	Expr &get_condition(){return *condition;};
-  	Expr &get_then(){return *then_part;};
-  	Expr &get_else(){return *else_part;};
+  	Expr *get_condition(){return condition;};
+  	Expr *get_then(){return then_part;};
+  	Expr *get_else(){return else_part;};
 };
 
 class VarDecl : public Decl {
-	Expr *expr;
+	Expr* expr;
 	bool escapes = false;
 
 public:
-	VarDecl(location _loc, std::string _name, Type _type_name, Expr *_expr)
+	VarDecl(location _loc, std::string _name, Type _type_name, Expr* _expr)
 	: Decl(_loc, _name, _type_name), expr(_expr){};
 
 	virtual ~VarDecl() { delete expr; };
-	Expr &get_expr()
+	Expr *get_expr()
 	{
-		return *expr;
+		return expr;
 	}
 
 	void set_escapes(){escapes = true;};
@@ -199,21 +208,21 @@ public:
 
 class FunDecl : public Decl {
 	std::vector<VarDecl *> params;
-	Expr *expr;
+	Expr *body;
 	std::string name;
 
 public:
 	FunDecl(location _loc, std::string _name, Type _type_name, std::vector<VarDecl *> _params, Expr *_expr)
-	: Decl(_loc, _name, _type_name), params(_params), expr(_expr) {};
+	: Decl(_loc, _name, _type_name), params(_params), body(_expr) {};
 
 	virtual ~FunDecl() {
-	    delete expr;
+	    delete body;
 	    for (auto param : params)
 	      delete param;
   	}
 
   	std::vector<VarDecl *> &get_params(){return params;};
-  	Expr &get_expr(){return *expr;};
+  	Expr get_body(){return *body;};
 
 };
 
@@ -232,14 +241,14 @@ public:
 	      delete arg;
   	}
 
-  	std::vector<Expr *> &get_args(){return args;};
+  	std::vector<Expr *> get_args(){return args;};
 
   	void set_decl(FunDecl *_decl){
   		if(!decl && _decl)
   			decl = _decl;
   	};
 
-  	FunDecl &get_decl(){return *decl;};
+  	FunDecl *get_decl(){return decl;};
 };
 
 class Loop : public Expr{
@@ -260,12 +269,12 @@ public:
     	delete condition;
   	};
 
-  	Expr &get_condition(){return *condition;};
-  	Expr &get_body(){return *body;};
+  	Expr *get_condition(){return condition;};
+  	Expr *get_body(){return body;};
 };
 
 class ForLoop : public Loop {
-	VarDecl *variable;
+	Expr *variable;
 	Expr *high;
 	Expr *body;
 
@@ -279,9 +288,9 @@ public:
 	    delete variable;
   	}
 
-  	VarDecl &get_variable() {return *variable;};
-  	Expr &get_high() {return *high;};
-  	Expr &get_body(){return *body;};
+  	Expr *get_variable() {return variable;};
+  	Expr *get_high() {return high;};
+  	Expr *get_body(){return body;};
 };
 
 class Break : public Expr {
@@ -299,7 +308,7 @@ public:
 class Assign : public Expr{
 	Identifier *lhs;
 	Expr *rhs;
-
+public:
 	Assign(location _loc, Identifier *_lhs, Expr *_rhs)
 	: Expr(_loc), lhs(_lhs), rhs(_rhs) {};
 
@@ -308,15 +317,27 @@ class Assign : public Expr{
 	    delete lhs;
   	};
 
-  	Identifier &get_lhs(){return *lhs;};
-  	Expr &get_rhs(){return *rhs;};
+  	Identifier *get_lhs(){return lhs;};
+  	Expr *get_rhs(){return rhs;};
 };
-
-Tree parser(std::vector<Token> tok);
-Expr *parse_token(std::vector<Token> tok);
 
 std::vector<Token> gen_cond_vect(std::vector<Token> basetok);
 std::vector<Token> gen_body_vect(std::vector<Token> basetok);
 
-Expr *make_if_node(std::vector<Token> tok, location loc);
-Expr *make_while_node(std::vector<Token> tok, location loc);
+Expr * make_identifier(Token tok);
+Expr * make_integer_literal(Token tok);
+Expr * make_double_literal(Token tok);
+Expr * make_string_literal(Token tok);
+Decl * make_var_decl(std::vector<Token> tok);
+
+Expr* make_if(std::vector<Token> tok);
+
+Expr *make_while_loop(std::vector<Token> tok);
+Expr *make_for_loop(std::vector<Token> tok);
+
+Expr * parse_assign(std::vector<Token> tok);
+Expr * make_assign(std::vector<Token> tok);
+
+Expr * parse_token(std::vector<Token> tok);
+Expr * parse_seq(std::vector<Token> tok);
+Tree parser(std::vector<Token> tok);
