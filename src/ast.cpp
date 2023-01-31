@@ -330,7 +330,7 @@ Expr *make_for_loop(std::vector<Token> tok)
 	location for_location=tok[0].get_loc();
 	tok.erase(tok.begin(),tok.begin()+1);
 
-	Decl* decl;
+	Decl* decl = NULL;
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
 	std::smatch match;
@@ -339,10 +339,17 @@ Expr *make_for_loop(std::vector<Token> tok)
 		decl = NULL;
 		tok.erase(tok.begin());
 	}
-	else if(std::regex_search(line,match,pOP_regex))
+	else if(std::regex_search(line,match,pASSIGN_regex))
 	{
-
+		decl = make_assign(tok);
 	}
+	else if(std::regex_search(line,match,pVARDECL_regex))
+	{
+		decl = make_var_decl(tok);
+	}
+
+	Expr *cond = parse_for_cond
+
 }
 
 Expr * parse_assign(std::vector<Token> tok)
