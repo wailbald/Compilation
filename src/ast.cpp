@@ -45,6 +45,9 @@ std::vector<Token> negatif(std::vector<Token> tok)
 
 int priorite(Token tok)
 {
+	if(tok.get_type() == NOT || tok.get_type() == COMP)
+		return 6;
+	
 	if(tok.get_type() == TIMES || tok.get_type() == DIVIDE)
 		return 5;
 
@@ -231,6 +234,15 @@ Expr *math_expr(std::vector<Token> tok)
 			tok.erase(tok.begin()+j);
 			BinaryOperator *nco = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
 			return nco;
+		}
+		
+		case NOT: 
+		{
+			l = tok[j].get_loc();
+			op = o_not;
+			tok.erase(tok.begin()+j);
+			BinaryOperator *nnot = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			return nnot;
 		}
 				
 		case EQ: 
