@@ -21,48 +21,6 @@ int assign_check_type(Token t)
 	exit(3);
 }
 
-std::vector<Token> negatif(std::vector<Token> tok)
-{
-	int i = 0;
-
-	while(tok[i].get_type() != EOF_)
-	{
-		if(tok[i].get_type() == MINUS)
-		{
-			if(tok[i-1].get_type() != RPAREN || tok[i-1].get_type() != ID || tok[i-1].get_type() != STR 
-				|| tok[i-1].get_type() != CHAR || tok[i-1].get_type() != INT || tok[i-1].get_type() != DOUBLE)
-			{
-				if(tok[i+1].get_type() == LPAREN)
-				{
-					int cpt = 1;
-					int j = i+2;
-					while(cpt != 0)
-					{
-						if(tok[j].get_type() == LPAREN)
-							cpt++;
-
-						if(tok[j].get_type() == RPAREN)
-							cpt--;
-
-						j++;
-					}
-					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
-				}
-				else
-				{
-					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
-				}
-
-				tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
-				tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
-			}
-		}
-		i++;
-	}
-
-	return tok;
-}
-
 /*
 %nonassoc FUNCTION VAR TYPE DO OF ASSIGN;
 %left OR;
