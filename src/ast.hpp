@@ -126,6 +126,24 @@ public:
   Expr *get_right(){return right;};
 };
 
+class UnaryOperator : public Expr {
+  Expr * expr;
+
+public:
+  Operation op;
+
+  // Constructor
+  UnaryOperator(location _loc, Expr *_expr,Operation _op)
+      : Expr(_loc), Expr(_expr), op(_op) {};
+
+  // Destructor
+  virtual ~UnaryOperator() {
+    delete expr;
+  };
+
+  Expr *get_expr(){return expr;};
+};
+
   class Sequence : public Expr{
   	std::vector<Expr *> exprs;
 
