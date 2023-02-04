@@ -6,22 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-class Node
-{
-	Token tok;
-	Node *lson;
-	Node *rson;
-
-	public:
-		Node(Token tok_, Node *lson_, Node *rson_) : tok(tok_), lson(lson_), rson(rson_){};
-		Node(Token tok_) : tok(tok_), lson(NULL), rson(NULL){};
-		Node *get_right(){return this->rson;};
-		Node *get_left(){return this->lson;};
-		Token get_tok(){return this->tok;};
-		void add_tok(Token t){this->tok = t;};
-		void add_left(Node *l){this->lson = l;};
-		void add_right(Node *r){this->rson = r;};
-};
+class Node;
 
 class Tree
 {
@@ -46,19 +31,19 @@ static std::string operation_name[] = { "+", "-", "/", "*", "%", "<<", ">>", "&"
 
 class visitor{};
 
-class NewNode{	
+class Node{	
 public:
 	location loc;
-	NewNode() {};
-	NewNode(location loc_) : loc(loc_){};
+	Node() {};
+	Node(location loc_) : loc(loc_){};
 
 	void accept(visitor v);
 };
 
-class Expr: public NewNode {
+class Expr: public Node {
 public:
-	Expr(): NewNode() {};
-	Expr(location &loc_) : NewNode(loc_) {};
+	Expr(): Node() {};
+	Expr(location &loc_) : Node(loc_) {};
 };
 
 class Decl: public Expr {
@@ -343,25 +328,35 @@ public:
   	Expr *get_rhs(){return rhs;};
 };
 
+std::vector<Token> negatif(std::vector<Token> tok);
+int priorite(Token tok);
+std::vector<Token> turntoNPI(std::vector<Token> tok);
+Expr * math_expr(std::vector<Token> tok);
+Type get_decl_type(Token tok);
+
+std::vector<VarDecl *> parse_func_params(std::vector<Token> tok);
+
 std::vector<Token> gen_cond_vect(std::vector<Token> basetok);
 std::vector<Token> gen_body_vect(std::vector<Token> basetok);
+std::vector<Expr *> parse_func_args(std::vector<Token> tok);
+Expr * parse_assign(std::vector<Token> tok);
 
 Expr * make_identifier(Token tok);
 Expr * make_integer_literal(Token tok);
 Expr * make_double_literal(Token tok);
 Expr * make_string_literal(Token tok);
-Decl * make_var_decl(std::vector<Token> tok);
-
+Expr* make_funcall(std::vector<Token> tok);
 Expr * make_mathematical_expression(std::vector<Token> tok);
 
-Expr* make_if(std::vector<Token> tok);
+Decl * make_var_decl(std::vector<Token> tok);
+Decl* make_fundecl(std::vector<Token> tok);
 
-Expr *make_while_loop(std::vector<Token> tok);
-Expr *make_for_loop(std::vector<Token> tok);
+Expr * make_if(std::vector<Token> tok);
+Expr * make_while_loop(std::vector<Token> tok);
+Expr * make_for_loop(std::vector<Token> tok);
 
-Expr * parse_assign(std::vector<Token> tok);
 Expr * make_assign(std::vector<Token> tok);
 
 Expr * parse_token(std::vector<Token> tok);
-Expr * parse_seq(std::vector<Token> tok);
+Expr * make_seq(std::vector<Token> tok);
 Tree parser(std::vector<Token> tok);

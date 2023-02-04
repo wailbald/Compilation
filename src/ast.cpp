@@ -548,7 +548,7 @@ std::vector<VarDecl *> parse_func_params(std::vector<Token> tok)
 	return params;
 }
 
-Expr* make_fundecl(std::vector<Token> tok)
+Decl* make_fundecl(std::vector<Token> tok)
 {
 	location fundecl_location=tok[0].get_loc();
 
@@ -560,7 +560,7 @@ Expr* make_fundecl(std::vector<Token> tok)
 	std::vector<VarDecl *> params = parse_func_params(tok);
 
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body_part = parse_seq(body_tok);
+	Expr *body_part = make_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	return new FunDecl(fundecl_location, token_id.get_text(), get_decl_type(token_decl),params, body_part);	
@@ -619,7 +619,7 @@ Expr* make_if(std::vector<Token> tok)
 	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
 	
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body_part = parse_seq(body_tok);
+	Expr *body_part = make_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	std::string line = gen_tok_string(tok);
@@ -627,7 +627,7 @@ Expr* make_if(std::vector<Token> tok)
 	if(std::regex_search(line,match,pELSEPART_regex))
 	{
 		std::vector<Token> else_tok = gen_body_vect(tok);
-		Expr *else_part = parse_seq(else_tok);
+		Expr *else_part = make_seq(else_tok);
 		tok.erase(tok.begin(),tok.begin()+else_tok.size());
 
 		IfThenElse* ite = new IfThenElse(if_location,cond_part,body_part,else_part);
@@ -650,7 +650,7 @@ Expr *make_while_loop(std::vector<Token> tok)
 	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
 	
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body_part = parse_seq(body_tok);
+	Expr *body_part = make_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
 
 	WhileLoop* wl = new WhileLoop(while_location,cond_part,body_part);
@@ -691,7 +691,7 @@ Expr *make_for_loop(std::vector<Token> tok)
 	}
 	tok.erase(tok.begin());
 	std::vector<Token> body_tok = gen_body_vect(tok);
-	Expr *body = parse_seq(body_tok);
+	Expr *body = make_seq(body_tok);
 	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);	
 
 	return new ForLoop(for_location, decl, cond, high, body);
@@ -742,18 +742,24 @@ Expr * make_assign(std::vector<Token> tok)
 
 Expr * parse_token(std::vector<Token> tok)
 {
-	Expr* abc = new Expr();
-	return abc;
+	return new Expr();
 }
 
-Expr * parse_seq(std::vector<Token> tok)
+Expr * make_seq(std::vector<Token> tok)
 {
-	Expr* abc = new Expr();
-	return abc;
+	location seq_location = tok[0].get_loc();
+	std::vector<Expr *> exprs;
+	while(tok[0].get_type() != EOF_ && tok.size())
+	{
+		exprs.push_back(parse_token(tok));
+		if(tok[0].get_type() == SEMICOLON)
+			tok.erase(tok.begin());
+	}
+	return new Sequence(seq_location, exprs);
 }
 
 Tree parser(std::vector<Token> tok)
 {
-	Expr* root = parse_seq(tok);
+	Expr* root = make_seq(tok);
 }
 
