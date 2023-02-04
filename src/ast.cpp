@@ -499,6 +499,8 @@ Decl * make_var_decl(std::vector<Token> tok)
 	location decl_loc = tok[0].get_loc();
 
 	Expr * expr = NULL;
+	Token token_decl = tok[0];
+	Token token_id = tok[1];
 
 	if(tok[2].get_type() == SEMICOLON)
 	{
@@ -515,9 +517,95 @@ Decl * make_var_decl(std::vector<Token> tok)
 		exit(5);
 	}
 
-	VarDecl * decl = new VarDecl(decl_loc,tok[1].get_text(),get_decl_type(tok[0]),expr);
+	VarDecl * decl = new VarDecl(decl_loc,token_id.get_text(),get_decl_type(token_decl),expr);
 
 	return decl;
+}
+
+std::vector<VarDecl *> parse_func_params(std::vector<Token> tok)
+{
+	std::vector<VarDecl *> params;	
+	while(tok[0].get_type() != RPAREN && tok.size())
+	{
+		location decl_loc = tok[0].get_loc();
+		Token token_decl = tok[0];
+		Token token_id = tok[1];
+		tok.erase(tok.begin(),tok.begin()+1);
+
+		params.push_back(new VarDecl(decl_loc,token_id.get_text(),get_decl_type(token_decl),NULL));
+
+		if(tok[0].get_type() == COLON)
+			tok.erase(tok.begin());
+	}
+	if(tok.size())
+		tok.erase(tok.begin());
+	else
+	{
+		printf("Error while parsing function argument\n");
+		exit(5);
+	}
+
+	return params;
+}
+
+Expr* make_fundecl(std::vector<Token> tok)
+{
+	location fundecl_location=tok[0].get_loc();
+
+	Token token_decl = tok[0];
+	Token token_id = tok[1];
+
+	tok.erase(tok.begin(),tok.begin()+1);
+
+	std::vector<VarDecl *> params = parse_func_params(tok);
+
+	std::vector<Token> body_tok = gen_body_vect(tok);
+	Expr *body_part = parse_seq(body_tok);
+	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
+
+	return new FunDecl(fundecl_location, token_id.get_text(), get_decl_type(token_decl),params, body_part);	
+}
+
+std::vector<Expr *> parse_func_args(std::vector<Token> tok)
+{
+	std::vector<Expr *> args;
+	while(tok[0].get_type() != RPAREN)
+	{
+		std::string line = gen_tok_string(tok);
+		std::smatch match;
+		line.insert(0,"#/#");
+		if(std::regex_search(line,match,pOP_regex))
+		{
+			args.push_back(make_mathematical_expression(tok));
+		}
+		else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
+		{
+			args.push_back(make_string_literal(tok[0]));
+			tok.erase(tok.begin());
+		}
+		else
+		{
+			printf("Error: Wrong token in argument part\n");
+			exit(5);
+		}
+		if(tok[0].get_type() == COMMA)
+		{
+			tok.erase(tok.begin());	
+		}
+	}
+	tok.erase(tok.begin());
+	return args;
+}
+
+Expr* make_funcall(std::vector<Token> tok)
+{
+	location funcall_location=tok[0].get_loc();
+	Token token_id = tok[0];
+	tok.erase(tok.begin(),tok.begin()+1);
+	
+	std::vector<Expr *> args = parse_func_args(tok);
+
+	return new FunCall(funcall_location,args,token_id.get_text());
 }
 
 Expr* make_if(std::vector<Token> tok)
@@ -618,6 +706,11 @@ Expr * parse_assign(std::vector<Token> tok)
 	if(std::regex_search(line,match,pOP_regex))
 	{
 		expr = make_mathematical_expression(tok);
+		tok.erase(tok.begin());
+	}
+	else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
+	{
+		expr = make_string_literal(tok[0]);
 		tok.erase(tok.begin());
 	}
 	else

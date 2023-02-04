@@ -228,6 +228,7 @@ class FunDecl : public Decl {
 	std::vector<VarDecl *> params;
 	Expr *body;
 	std::string name;
+	
 
 public:
 	FunDecl(location _loc, std::string _name, Type _type_name, std::vector<VarDecl *> _params, Expr *_expr)
