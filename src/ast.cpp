@@ -45,22 +45,36 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 int priorite(Token tok)
 {
 	std::cout<<token_name[tok.get_type()]<<std::endl;
-	if(tok.get_type() == NOT || tok.get_type() == COMP)
-		return 6;
+	if(tok.get_type() == LPAREN || tok.get_type() == RPAREN)
+		return 11;
 	
-	if(tok.get_type() == TIMES || tok.get_type() == DIVIDE)
-		return 5;
+	if(tok.get_type() == NOT || tok.get_type() == COMP)
+		return 10;
+	
+	if(tok.get_type() == TIMES || tok.get_type() == DIVIDE || tok.get_type() == MODULE)
+		return 9;
 
 	if(tok.get_type() == PLUS || tok.get_type() == MINUS)
+		return 8;
+
+	if(tok.get_type() == GT || tok.get_type() == GE || tok.get_type() == LE || tok.get_type() == LT)
+		return 7;
+
+	if(tok.get_type() == EQ || tok.get_type() == NEQ)
+		return 6;
+	
+	if(tok.get_type() == AND)
+		return 5;
+
+	if(tok.get_type() == OR)
 		return 4;
-
-	if(tok.get_type() == EQ || tok.get_type() == NEQ || tok.get_type() == GT 
-		|| tok.get_type() == GE || tok.get_type() == LE || tok.get_type() == LT)
+	
+	if(tok.get_type() == XOR)
 		return 3;
-
+	
 	if(tok.get_type() == CAND)
 		return 2;
-
+	
 	if(tok.get_type() == COR)
 		return 1;
 		
