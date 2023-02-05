@@ -39,12 +39,12 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 		}
 		i++;
 	}
-
 	return tok;
 }
 
 int priorite(Token tok)
 {
+	std::cout<<token_name[tok.get_type()]<<std::endl;
 	if(tok.get_type() == NOT || tok.get_type() == COMP)
 		return 6;
 	
@@ -76,6 +76,8 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 
 	while(tok[i].get_type() != SEMICOLON)
 	{
+		std::cout<<"OUT: "<<gen_tok_string(out)<<std::endl;
+		std::cout<<"STACK: "<<gen_tok_string(stack)<<std::endl;
 		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
 		{
@@ -95,16 +97,20 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 				stack.pop_back();
 			}
 			//on enleve la parenthese restante
+			tok.erase(tok.begin());	
 			stack.pop_back();
 		}
 		else
 		{
 			for(int j = stack.size()-1; j >= 0; j--)
 			{
-				if(stack[i].get_type() == LPAREN)
-					break; 
-				else
+				//std::cout<<token_name[stack[j].get_type()]<<std::endl;
+				if(stack[j].get_type() == LPAREN)
 				{
+					break; 
+				}
+				else
+				{	
 					if(priorite(tok[i]) < priorite(stack[j]))
 					{
 						out.push_back(stack[j]);
@@ -228,7 +234,7 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_comp;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nco = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			UnaryOperator *nco = new UnaryOperator(l,math_expr(tok),op);
 			return nco;
 		}
 		
@@ -237,7 +243,7 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_not;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nnot = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			UnaryOperator *nnot = new UnaryOperator(l,math_expr(tok),op);
 			return nnot;
 		}
 				
@@ -466,6 +472,7 @@ Expr * make_string_literal(Token tok)
 Expr * make_mathematical_expression(std::vector<Token> &tok)
 {
 	std::vector<Token> npi = negatif(tok);
+	std::cout<<"ICI: "<<gen_tok_string(tok)<<std::endl;
 	npi = turntoNPI(npi);
 	Expr * expr = math_expr(npi);
 	while(tok[0].get_type()!=SEMICOLON)
@@ -793,7 +800,7 @@ Expr * parse_token(std::vector<Token> &tok)
 		return make_break(tok);
 	}
 	if(std::regex_search(line,match,pASSIGN_regex))
-	{
+	{	
 		return make_assign(tok);
 	}
 	if(std::regex_search(line,match,pFUNDECL_regex))
