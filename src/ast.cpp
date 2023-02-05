@@ -44,7 +44,7 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 
 int priorite(Token tok)
 {
-	std::cout<<token_name[tok.get_type()]<<std::endl;
+	
 	if(tok.get_type() == LPAREN || tok.get_type() == RPAREN)
 		return 11;
 	
@@ -77,8 +77,8 @@ int priorite(Token tok)
 	
 	if(tok.get_type() == COR)
 		return 1;
-		
-	std::cout << "symbole non defini" << std::endl;
+	std::cout<<token_name[tok.get_type()];
+	std::cout << " symbole non defini" << std::endl;
 	exit(4);
 }
 
@@ -88,7 +88,7 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 	std::vector<Token> stack;
 	int i = 0;
 
-	while(tok[i].get_type() != SEMICOLON)
+	while(tok[i].get_type() != SEMICOLON && tok.size())
 	{
 		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
@@ -116,7 +116,6 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 		{
 			for(int j = stack.size()-1; j >= 0; j--)
 			{
-				//std::cout<<token_name[stack[j].get_type()]<<std::endl;
 				if(stack[j].get_type() == LPAREN)
 				{
 					break; 
@@ -365,11 +364,9 @@ std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 {
 	int paren_depth = 0;
 	std::vector<Token> cond_tok;
-	std::cout<<"COND: "<<gen_tok_string(basetok)<<std::endl;
 
 	for(auto elem : basetok)
 	{
-		std::cout<<paren_depth<<token_name[elem.get_type()]<<std::endl;
 		switch (elem.get_type())
 		{
 			case(LBRACE):
@@ -417,9 +414,9 @@ std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 			paren_depth++;
 		if(elem.get_type() == RPAREN)
 			paren_depth--;
+		cond_tok.push_back(elem);
 		if(!paren_depth)
 			return cond_tok;
-		cond_tok.push_back(elem);
 	}
 	printf("Error: Unexpected End Of File\n");
 	exit(6);
@@ -428,7 +425,7 @@ std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 
 std::vector<Token> gen_body_vect(std::vector<Token> &basetok)
 {
-	int brckt_depth = 0;
+	int brckt_depth = 1;
 	bool in_bracket = false;
 	std::vector<Token> body_tok;
 	for(auto elem : basetok)
@@ -489,7 +486,7 @@ Expr * make_mathematical_expression(std::vector<Token> &tok)
 	std::vector<Token> npi = negatif(tok);
 	npi = turntoNPI(npi);
 	Expr * expr = math_expr(npi);
-	while(tok[0].get_type()!=SEMICOLON)
+	while(tok[0].get_type()!=SEMICOLON && tok.size())
 	{
 		tok.erase(tok.begin());
 	}
@@ -594,6 +591,7 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 	std::vector<Expr *> args;
 	while(tok[0].get_type() != RPAREN)
 	{
+		std::cout<<"parse_arg: "<<gen_tok_string(tok)<<std::endl;
 		std::string line = gen_tok_string(tok);
 		std::smatch match;
 		line.insert(0,"#/#");
@@ -612,6 +610,7 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 		}
 		else
 		{
+			std::cout<<tok[0]<<std::endl;
 			printf("Error: Wrong token in argument part\n");
 			exit(5);
 		}
@@ -674,11 +673,20 @@ Expr *make_while_loop(std::vector<Token> &tok)
 
 	std::vector<Token> cond_tok = gen_cond_vect(tok);
 	Expr * cond_part = make_mathematical_expression(cond_tok);
-	tok.erase(tok.begin(),tok.begin()+cond_tok.size()+1);
-	
+	while(tok[0].get_type() != LBRACE)
+	{
+		tok.erase(tok.begin());
+	}
+	tok.erase(tok.begin());
+
+
 	std::vector<Token> body_tok = gen_body_vect(tok);
 	Expr *body_part = make_seq(body_tok);
-	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
+	while(tok[0].get_type() != RBRACE)
+	{
+		tok.erase(tok.begin());
+	}
+	tok.erase(tok.begin());
 
 	WhileLoop* wl = new WhileLoop(while_location,cond_part,body_part);
 	return wl;
@@ -744,6 +752,7 @@ Expr * parse_assign(std::vector<Token> &tok)
 	}
 	else
 	{
+		std::cout<<line<<std::endl;
 		printf("Error: Wrong right part of assign expression\n");
 		exit(5);
 	}
@@ -858,11 +867,13 @@ Expr * make_seq(std::vector<Token> &tok)
 {
 	location seq_location = tok[0].get_loc();
 	std::vector<Expr *> exprs;
-	while(tok[0].get_type() != EOF_ && tok.size())
+	while(tok[0].get_type() != EOF_ && !tok.empty())
 	{
 		exprs.push_back(parse_token(tok));
-		if(tok[0].get_type() == SEMICOLON)
+		if(tok[0].get_type() == SEMICOLON && !tok.empty())
+		{
 			tok.erase(tok.begin());
+		}
 	}
 	return new Sequence(seq_location, exprs);
 }
