@@ -58,10 +58,10 @@ int priorite(Token tok)
 		|| tok.get_type() == GE || tok.get_type() == LE || tok.get_type() == LT)
 		return 3;
 
-	if(tok.get_type() == AND)
+	if(tok.get_type() == CAND)
 		return 2;
 
-	if(tok.get_type() == OR)
+	if(tok.get_type() == COR)
 		return 1;
 		
 	std::cout << "symbole non defini" << std::endl;
@@ -76,8 +76,6 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 
 	while(tok[i].get_type() != SEMICOLON)
 	{
-		std::cout<<"OUT: "<<gen_tok_string(out)<<std::endl;
-		std::cout<<"STACK: "<<gen_tok_string(stack)<<std::endl;
 		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
 		{
@@ -351,10 +349,13 @@ Expr *math_expr(std::vector<Token> &tok)
 
 std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 {
-	int paren_depth = 1;
+	int paren_depth = 0;
 	std::vector<Token> cond_tok;
+	std::cout<<"COND: "<<gen_tok_string(basetok)<<std::endl;
+
 	for(auto elem : basetok)
 	{
+		std::cout<<paren_depth<<token_name[elem.get_type()]<<std::endl;
 		switch (elem.get_type())
 		{
 			case(LBRACE):
@@ -472,7 +473,6 @@ Expr * make_string_literal(Token tok)
 Expr * make_mathematical_expression(std::vector<Token> &tok)
 {
 	std::vector<Token> npi = negatif(tok);
-	std::cout<<"ICI: "<<gen_tok_string(tok)<<std::endl;
 	npi = turntoNPI(npi);
 	Expr * expr = math_expr(npi);
 	while(tok[0].get_type()!=SEMICOLON)
