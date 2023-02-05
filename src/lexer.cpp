@@ -104,7 +104,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 		}
 		if(std::regex_search(line,match,RETURN_regex))
 		{
-			tok_line.push_back(Token(ELSE,(location){*line_num,*col_num}));
+			tok_line.push_back(Token(RETURN,(location){*line_num,*col_num}));
 			line.erase(match.position(),match.length());
 			*col_num= *col_num + match.length() - 3;
 			continue;

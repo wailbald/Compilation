@@ -1,16 +1,16 @@
 #include "ast.hpp"
 
-std::vector<Token> negatif(std::vector<Token> tok)
+std::vector<Token> negatif(std::vector<Token> &tok)
 {
 	int i = 0;
-
-	while(tok[i].get_type() != EOF_)
-	{
+	while(tok[i].get_type() != SEMICOLON && tok.size())
+	{	
 		if(tok[i].get_type() == MINUS)
 		{
-			if(tok[i-1].get_type() != RPAREN || tok[i-1].get_type() != ID || tok[i-1].get_type() != STR 
-				|| tok[i-1].get_type() != CHAR || tok[i-1].get_type() != INT || tok[i-1].get_type() != DOUBLE)
+			if(tok[i-1].get_type() != RPAREN && tok[i-1].get_type() != ID && tok[i-1].get_type() != STR 
+				&& tok[i-1].get_type() != CHAR && tok[i-1].get_type() != INT && tok[i-1].get_type() != DOUBLE)
 			{
+				tok.erase(tok.begin()+i);		
 				if(tok[i+1].get_type() == LPAREN)
 				{
 					int cpt = 1;
@@ -29,7 +29,7 @@ std::vector<Token> negatif(std::vector<Token> tok)
 				}
 				else
 				{
-					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
+					tok.insert(tok.begin()+i+1,Token(RPAREN,(location){0,0}));
 				}
 				
 				tok.insert(tok.begin()+i,Token(MINUS,(location){0,0}));
@@ -68,7 +68,7 @@ int priorite(Token tok)
 	exit(4);
 }
 
-std::vector<Token> turntoNPI(std::vector<Token> tok)
+std::vector<Token> turntoNPI(std::vector<Token> &tok)
 {
 	std::vector<Token> out;
 	std::vector<Token> stack;
@@ -80,16 +80,14 @@ std::vector<Token> turntoNPI(std::vector<Token> tok)
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
 		{
 			out.push_back(tok[i]);
-			tok.erase(tok.begin()+i);
+			tok.erase(tok.begin());
 		}
-
-		if(tok[i].get_type() == LPAREN)
+		else if(tok[i].get_type() == LPAREN)
 		{
 			stack.push_back(tok[i]);
-			tok.erase(tok.begin()+i);
+			tok.erase(tok.begin());
 		}
-
-		if(tok[i].get_type() == RPAREN)
+		else if(tok[i].get_type() == RPAREN)
 		{
 			while(stack.back().get_type() != LPAREN)
 			{
@@ -99,10 +97,9 @@ std::vector<Token> turntoNPI(std::vector<Token> tok)
 			//on enleve la parenthese restante
 			stack.pop_back();
 		}
-
 		else
 		{
-			for(int j = stack.size()-1; j > 0; j--)
+			for(int j = stack.size()-1; j >= 0; j--)
 			{
 				if(stack[i].get_type() == LPAREN)
 					break; 
@@ -116,9 +113,8 @@ std::vector<Token> turntoNPI(std::vector<Token> tok)
 				}
 			}
 			stack.push_back(tok[i]);
-			tok.erase(tok.begin()+i);
+			tok.erase(tok.begin());
 		}
-		i++;
 	}
 	while(!stack.empty())
 	{
@@ -128,16 +124,15 @@ std::vector<Token> turntoNPI(std::vector<Token> tok)
 	return out;
 }
 
-Expr *math_expr(std::vector<Token> tok)
+Expr *math_expr(std::vector<Token> &tok)
 {	
-	size_t j = tok.size();
+	size_t j = tok.size()-1;
 	location l;
 	Operation op;
 	auto k = tok[j].get_type();
 		
 	switch(k)
 	{
-		
 		case PLUS: 
 		{
 			l = tok[j].get_loc();
@@ -341,12 +336,14 @@ Expr *math_expr(std::vector<Token> tok)
 
 		default :
 		{
+			std::cout<<"Error in math expression"<<std::endl;
+			exit(5);
 			return NULL;
 		}
 	}
 }
 
-std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
+std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 {
 	int paren_depth = 1;
 	std::vector<Token> cond_tok;
@@ -408,7 +405,7 @@ std::vector<Token> gen_cond_vect(std::vector<Token> basetok)
 	return cond_tok;
 }
 
-std::vector<Token> gen_body_vect(std::vector<Token> basetok)
+std::vector<Token> gen_body_vect(std::vector<Token> &basetok)
 {
 	int brckt_depth = 0;
 	bool in_bracket = false;
@@ -466,11 +463,16 @@ Expr * make_string_literal(Token tok)
 	return new StringLiteral(tok.get_loc() ,tok.get_text());
 }
 
-Expr * make_mathematical_expression(std::vector<Token> tok)
+Expr * make_mathematical_expression(std::vector<Token> &tok)
 {
 	std::vector<Token> npi = negatif(tok);
 	npi = turntoNPI(npi);
-	return math_expr(npi);
+	Expr * expr = math_expr(npi);
+	while(tok[0].get_type()!=SEMICOLON)
+	{
+		tok.erase(tok.begin());
+	}
+	return expr;
 }
 
 Type get_decl_type(Token tok)
@@ -494,7 +496,7 @@ Type get_decl_type(Token tok)
 	return t_undef;
 }
 
-Decl * make_var_decl(std::vector<Token> tok)
+Decl * make_var_decl(std::vector<Token> &tok)
 {
 	location decl_loc = tok[0].get_loc();
 
@@ -522,7 +524,7 @@ Decl * make_var_decl(std::vector<Token> tok)
 	return decl;
 }
 
-std::vector<VarDecl *> parse_func_params(std::vector<Token> tok)
+std::vector<VarDecl *> parse_func_params(std::vector<Token> &tok)
 {
 	std::vector<VarDecl *> params;	
 	while(tok[0].get_type() != RPAREN && tok.size())
@@ -548,7 +550,7 @@ std::vector<VarDecl *> parse_func_params(std::vector<Token> tok)
 	return params;
 }
 
-Decl* make_fundecl(std::vector<Token> tok)
+Decl* make_fundecl(std::vector<Token> &tok)
 {
 	location fundecl_location=tok[0].get_loc();
 
@@ -566,7 +568,7 @@ Decl* make_fundecl(std::vector<Token> tok)
 	return new FunDecl(fundecl_location, token_id.get_text(), get_decl_type(token_decl),params, body_part);	
 }
 
-std::vector<Expr *> parse_func_args(std::vector<Token> tok)
+std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 {
 	std::vector<Expr *> args;
 	while(tok[0].get_type() != RPAREN)
@@ -574,6 +576,10 @@ std::vector<Expr *> parse_func_args(std::vector<Token> tok)
 		std::string line = gen_tok_string(tok);
 		std::smatch match;
 		line.insert(0,"#/#");
+		if(std::regex_search(line,match,pFUNCALL_regex))
+		{
+			args.push_back(make_funcall(tok));
+		}
 		if(std::regex_search(line,match,pOP_regex))
 		{
 			args.push_back(make_mathematical_expression(tok));
@@ -597,7 +603,7 @@ std::vector<Expr *> parse_func_args(std::vector<Token> tok)
 	return args;
 }
 
-Expr* make_funcall(std::vector<Token> tok)
+Expr* make_funcall(std::vector<Token> &tok)
 {
 	location funcall_location=tok[0].get_loc();
 	Token token_id = tok[0];
@@ -608,7 +614,7 @@ Expr* make_funcall(std::vector<Token> tok)
 	return new FunCall(funcall_location,args,token_id.get_text());
 }
 
-Expr* make_if(std::vector<Token> tok)
+Expr* make_if(std::vector<Token> &tok)
 {
 	location if_location=tok[0].get_loc();
 	tok.erase(tok.begin(),tok.begin()+1);
@@ -640,7 +646,7 @@ Expr* make_if(std::vector<Token> tok)
 	}
 }
 
-Expr *make_while_loop(std::vector<Token> tok)
+Expr *make_while_loop(std::vector<Token> &tok)
 {
 	location while_location=tok[0].get_loc();
 	tok.erase(tok.begin(),tok.begin()+1);
@@ -657,7 +663,7 @@ Expr *make_while_loop(std::vector<Token> tok)
 	return wl;
 }
 
-Expr *make_for_loop(std::vector<Token> tok)
+Expr *make_for_loop(std::vector<Token> &tok)
 {
 	location for_location=tok[0].get_loc();
 	tok.erase(tok.begin(),tok.begin()+1);
@@ -697,21 +703,23 @@ Expr *make_for_loop(std::vector<Token> tok)
 	return new ForLoop(for_location, decl, cond, high, body);
 }
 
-Expr * parse_assign(std::vector<Token> tok)
+Expr * parse_assign(std::vector<Token> &tok)
 {	
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
 	std::smatch match;
 	Expr* expr = NULL;
-	if(std::regex_search(line,match,pOP_regex))
+	if(std::regex_search(line,match,pFUNCALL_regex))
+	{
+		expr=make_funcall(tok);
+	}
+	else if(std::regex_search(line,match,pOP_regex))
 	{
 		expr = make_mathematical_expression(tok);
-		tok.erase(tok.begin());
 	}
 	else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
 	{
 		expr = make_string_literal(tok[0]);
-		tok.erase(tok.begin());
 	}
 	else
 	{
@@ -721,7 +729,7 @@ Expr * parse_assign(std::vector<Token> tok)
 	return expr;
 }
 
-Expr * make_assign(std::vector<Token> tok)
+Expr * make_assign(std::vector<Token> &tok)
 {
 	Identifier * id = (Identifier*)make_identifier(tok[0]);
 	tok.erase(tok.begin());
@@ -740,12 +748,92 @@ Expr * make_assign(std::vector<Token> tok)
 	return new Assign(loc,id,rhs);
 }
 
-Expr * parse_token(std::vector<Token> tok)
+Expr *make_return(std::vector<Token> &tok)
 {
+	location loc = tok[0].get_loc();
+	tok.erase(tok.begin());
+
+	std::smatch match;
+	std::string line = gen_tok_string(tok);
+	line.insert(0,"#/#");
+	
+	Expr * expr = NULL;
+	if(std::regex_search(line,match,pASSIGN_regex))
+	{
+		expr = make_assign(tok);
+	}
+	else if(std::regex_search(line,match,pOP_regex))
+	{
+		expr = make_mathematical_expression(tok);
+	}
+
+	return new Return(loc,expr);
+}
+
+Expr * make_break(std::vector<Token> &tok)
+{
+	location loc = tok[0].get_loc();
+	tok.erase(tok.begin());
+
+	return new Break(loc);
+}
+
+Expr * parse_token(std::vector<Token> &tok)
+{
+	std::smatch match;
+	std::string line = gen_tok_string(tok);
+	line.insert(0,"#/#");
+	std::cout<<"----------------------------------------\n"<<line<<std::endl;
+	if(std::regex_search(line,match,pRETURN_regex))
+	{
+		return make_return(tok);
+	}
+	if(std::regex_search(line,match,pBREAK_regex))
+	{
+		return make_break(tok);
+	}
+	if(std::regex_search(line,match,pASSIGN_regex))
+	{
+		return make_assign(tok);
+	}
+	if(std::regex_search(line,match,pFUNDECL_regex))
+	{
+		return make_fundecl(tok);
+	}
+	if(std::regex_search(line,match,pVARDECL_regex))
+	{
+		return make_var_decl(tok);
+	}
+	if(std::regex_search(line,match,pIF_regex))
+	{
+		return make_if(tok);
+	}
+	if(std::regex_search(line,match,pWHILE_regex))
+	{
+		return make_while_loop(tok);
+	}
+	if(std::regex_search(line,match,pFOR_regex))
+	{
+		return make_for_loop(tok);
+	}
+	if(std::regex_search(line,match,pFUNCALL_regex))
+	{
+		return make_funcall(tok);
+	}
+	if(std::regex_search(line,match,pOP_regex))
+	{
+		return make_mathematical_expression(tok);
+	}
+	if(std::regex_search(line,match,pSTRINGLITERAL_regex))
+	{
+		Token tok__ = tok[0];
+		tok.erase(tok.begin());
+		return make_string_literal(tok__);
+	}
 	return new Expr();
 }
 
-Expr * make_seq(std::vector<Token> tok)
+Expr * make_seq(std::vector<Token> &tok)
 {
 	location seq_location = tok[0].get_loc();
 	std::vector<Expr *> exprs;
@@ -758,8 +846,9 @@ Expr * make_seq(std::vector<Token> tok)
 	return new Sequence(seq_location, exprs);
 }
 
-Tree parser(std::vector<Token> tok)
+Tree parser(std::vector<Token> &tok)
 {
 	Expr* root = make_seq(tok);
+	return Tree(root);
 }
 

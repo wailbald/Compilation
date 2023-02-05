@@ -30,6 +30,15 @@ set(TEST_LEXER_SRC
    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_lexer.cpp
 )
 
+set(TEST_PARSER_SRC
+   ${TEST_PARSER_SRC}
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/binder.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/test_parser.cpp
+)
+
 set(HEADERS
    ${HEADERS}
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast_regex.hpp
@@ -43,6 +52,7 @@ set(HEADERS
 
 add_executable(test_token ${TEST_TOKEN_SRC} ${HEADERS})
 add_executable(test_lexer ${TEST_LEXER_SRC} ${HEADERS})
+add_executable(test_parser ${TEST_PARSER_SRC} ${HEADERS})
 
 
 

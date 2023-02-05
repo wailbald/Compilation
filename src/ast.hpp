@@ -309,7 +309,21 @@ public:
 			loop = _loop;
 	}
 
-	Loop &get_loop(){return *loop;}
+	Loop *get_loop(){return loop;}
+};
+
+class Return : public Expr {
+	FunDecl * func = nullptr;
+	Expr * expr;
+public:
+	Return(location _loc, Expr* _expr) : Expr(_loc), expr(_expr){};
+	void set_func(FunDecl *_func){
+		if(!func && _func)
+			func = _func;
+	}
+
+	FunDecl *get_func(){return func;}
+	Expr *get_expr(){return expr;}
 };
 
 class Assign : public Expr{
@@ -328,35 +342,38 @@ public:
   	Expr *get_rhs(){return rhs;};
 };
 
-std::vector<Token> negatif(std::vector<Token> tok);
+std::vector<Token> negatif(std::vector<Token> &tok);
 int priorite(Token tok);
-std::vector<Token> turntoNPI(std::vector<Token> tok);
-Expr * math_expr(std::vector<Token> tok);
+std::vector<Token> turntoNPI(std::vector<Token> &tok);
+Expr * math_expr(std::vector<Token> &tok);
 Type get_decl_type(Token tok);
 
-std::vector<VarDecl *> parse_func_params(std::vector<Token> tok);
+std::vector<VarDecl *> parse_func_params(std::vector<Token> &tok);
 
-std::vector<Token> gen_cond_vect(std::vector<Token> basetok);
-std::vector<Token> gen_body_vect(std::vector<Token> basetok);
-std::vector<Expr *> parse_func_args(std::vector<Token> tok);
-Expr * parse_assign(std::vector<Token> tok);
+std::vector<Token> gen_cond_vect(std::vector<Token> &basetok);
+std::vector<Token> gen_body_vect(std::vector<Token> &basetok);
+std::vector<Expr *> parse_func_args(std::vector<Token> &tok);
+Expr * parse_assign(std::vector<Token> &tok);
+
+Expr *make_return(std::vector<Token> &tok);
+Expr *make_break(std::vector<Token> &tok);
 
 Expr * make_identifier(Token tok);
 Expr * make_integer_literal(Token tok);
 Expr * make_double_literal(Token tok);
 Expr * make_string_literal(Token tok);
-Expr* make_funcall(std::vector<Token> tok);
-Expr * make_mathematical_expression(std::vector<Token> tok);
+Expr* make_funcall(std::vector<Token> &tok);
+Expr * make_mathematical_expression(std::vector<Token> &tok);
 
-Decl * make_var_decl(std::vector<Token> tok);
-Decl* make_fundecl(std::vector<Token> tok);
+Decl * make_var_decl(std::vector<Token> &tok);
+Decl* make_fundecl(std::vector<Token> &tok);
 
-Expr * make_if(std::vector<Token> tok);
-Expr * make_while_loop(std::vector<Token> tok);
-Expr * make_for_loop(std::vector<Token> tok);
+Expr * make_if(std::vector<Token> &tok);
+Expr * make_while_loop(std::vector<Token> &tok);
+Expr * make_for_loop(std::vector<Token> &tok);
 
-Expr * make_assign(std::vector<Token> tok);
+Expr * make_assign(std::vector<Token> &tok);
 
-Expr * parse_token(std::vector<Token> tok);
-Expr * make_seq(std::vector<Token> tok);
-Tree parser(std::vector<Token> tok);
+Expr * parse_token(std::vector<Token> &tok);
+Expr * make_seq(std::vector<Token> &tok);
+Tree parser(std::vector<Token> &tok);
