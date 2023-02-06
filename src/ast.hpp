@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdint>
 #include <cstdlib>
+#include <unordered_map>
 
 class Node;
 
@@ -17,11 +18,6 @@ class Tree
 		Tree(Node *root_) : root(root_) {};
 		Node *get_root(){return this->root;};
 };
-
-int assign_check_type(Token t);
-int verif_assign(std::vector<Token> tok, int i);
-Tree create_assign(std::vector<Token> tok, int i);
-
 
 typedef enum { t_undef = 0, t_int, t_double, t_string, t_void, t_tab } Type;
 static std::string type_name[] = {"t_undef","int","string","void","tab"};

@@ -1,5 +1,7 @@
 #include "ast.hpp"
 
+std::unordered_map<std::string, Expr> func_map;
+
 std::vector<Token> negatif(std::vector<Token> &tok)
 {
 	int i = 0;
@@ -82,8 +84,15 @@ int priorite(Token tok)
 	exit(4);
 }
 
+void func_npi(int a, std::vector<Token> t)
+{
+	auto call = make_funcall(t);
+	func_map[std::to_string(a)] = *call;
+}
+
 std::vector<Token> turntoNPI(std::vector<Token> &tok)
 {
+	int id = 1;
 	std::vector<Token> out;
 	std::vector<Token> stack;
 	int i = 0;
@@ -93,8 +102,28 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
 		{
-			out.push_back(tok[i]);
-			tok.erase(tok.begin());
+			if(tok.size()>1 && tok[i+1].get_type() == LPAREN)
+			{
+				std::vector<Token> fun;
+
+				while(tok[i].get_type() != RPAREN)
+				{
+					fun.push_back(tok[i]);
+					tok.erase(tok.begin());
+				}
+				fun.push_back(tok[i]);
+				tok.erase(tok.begin());
+
+				func_npi(id,fun);
+				Token(FUNCALL,(location){0,0},std::to_string(id));
+				id ++;
+			}
+
+			else
+			{
+				out.push_back(tok[i]);
+				tok.erase(tok.begin());
+			}
 		}
 		else if(tok[i].get_type() == LPAREN)
 		{
@@ -349,6 +378,22 @@ Expr *math_expr(std::vector<Token> &tok)
 			Expr *nid = make_identifier(tok[j]);
 			tok.erase(tok.begin()+j);
 			return nid;
+		}
+
+		case FUNCALL:
+		{
+			auto decl = func_map.find(tok[j].get_text());
+			if(decl != func_map.cend())
+			{
+				tok.erase(tok.begin()+j);
+				return &decl->second;
+			}
+			else
+			{
+				std::cout << "Probleme lors de la gestion de la fonction dans l'expression mathematique" << std::endl;
+				exit(7);
+			}
+			
 		}
 
 		default :
