@@ -68,6 +68,8 @@ enum token_t {
 	DOUBLE,		// double
 	TAB,		// tab
 
+	FUNCALL,	// Dummy Token for math expression
+
 	/* Other */
 
 	DECL,		// déclaration fonction ou variable
@@ -136,6 +138,8 @@ static std::string token_name[] =
 	"INT",			// integer
 	"DOUBLE",		// double
 	"TAB",			// tab
+
+	"FUNCALL",		// Dummy Token for math expression
 
 	/* Other */
 
