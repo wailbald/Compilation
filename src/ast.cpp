@@ -740,30 +740,32 @@ Expr *make_while_loop(std::vector<Token> &tok)
 Expr *make_for_loop(std::vector<Token> &tok)
 {
 	location for_location=tok[0].get_loc();
-	tok.erase(tok.begin(),tok.begin()+1);
+	tok.erase(tok.begin(),tok.begin()+2);
 
 	Expr* decl = NULL;
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
 	std::smatch match;
+	std::cout<<line<<std::endl;
 	if(tok[0].get_type() == SEMICOLON)
 	{
 		decl = NULL;
 		tok.erase(tok.begin());
 	}
-	else if(std::regex_search(line,match,pASSIGN_regex))
-	{
-		decl = make_assign(tok);
-	}
 	else if(std::regex_search(line,match,pVARDECL_regex))
 	{
 		decl = make_var_decl(tok);
 	}
-
+	else if(std::regex_search(line,match,pASSIGN_regex))
+	{
+		decl = make_assign(tok);
+	}
+	
+	std::cout<<gen_tok_string(tok)<<std::endl;
 	Expr *cond = make_mathematical_expression(tok);
 	tok.erase(tok.begin());
 
-	Expr *high = make_mathematical_expression(tok);
+	Expr *high = make_assign(tok);
 	if(tok[0].get_type()!= RPAREN)
 	{
 		printf("Error, expected RPAREN token\n");
