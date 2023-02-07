@@ -1,0 +1,18 @@
+int max(int a, int b)
+{
+	if(a<b)
+	{
+		return b;
+	}
+	else
+	{
+		return a;
+	}
+}
+
+int a = 2;
+int b = 3;
+
+int maximum = max(a,b);
+print("Le maximum est: ");
+print_int(maximum);
