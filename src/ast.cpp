@@ -150,14 +150,17 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 				}
 				return out;
 			}
-			while(stack.back().get_type() != LPAREN)
+			else
 			{
-				out.push_back(stack.back());
+				while(stack.back().get_type() != LPAREN)
+				{
+					out.push_back(stack.back());
+					stack.pop_back();
+				}
+				//on enleve la parenthese restante
+				tok.erase(tok.begin());	
 				stack.pop_back();
 			}
-			//on enleve la parenthese restante
-			tok.erase(tok.begin());	
-			stack.pop_back();
 		}
 		else
 		{
