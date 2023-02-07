@@ -1,6 +1,8 @@
 int a = 2
 int b = 5
-float f = 22.5
-str s = "abc"
+double f = 22.5
 
-print("%d %d %f %s %d",a,b,f,s,s.size)
+print_int(a)
+print_int(b)
+print_double(a)
+print("abc")

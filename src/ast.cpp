@@ -476,34 +476,33 @@ std::vector<Token> gen_cond_vect(std::vector<Token> &basetok)
 
 std::vector<Token> gen_body_vect(std::vector<Token> &basetok)
 {
-	int brckt_depth = 1;
+	int brckt_depth = 0;
 	bool in_bracket = false;
 	std::vector<Token> body_tok;
 	for(auto elem : basetok)
 	{
 		if(elem.get_type() == SEMICOLON)
 		{
-			if(in_bracket)
-			{
-				printf("Error: Unexpected SEMICOLON token\n");
-				exit(6);
-			}
-			else
+			if(!in_bracket)
 			{
 				body_tok.push_back(elem);
 				return body_tok;
 			}
 		}
-		if(elem.get_type() == LBRCKT)
+		if(elem.get_type() == LBRACE)
 		{
 			brckt_depth++;
 			in_bracket = true;
 		}	
 			
-		if(elem.get_type() == RBRCKT)
+		if(elem.get_type() == RBRACE)
 			brckt_depth--;
 		if(!brckt_depth)
+		{
+			if(body_tok[0].get_type() == LBRACE)
+				body_tok.erase(body_tok.begin());
 			return body_tok;
+		}
 		body_tok.push_back(elem);
 		
 	}
@@ -728,7 +727,6 @@ Expr *make_while_loop(std::vector<Token> &tok)
 	{
 		tok.erase(tok.begin());
 	}
-	tok.erase(tok.begin());
 
 
 	std::vector<Token> body_tok = gen_body_vect(tok);
@@ -741,6 +739,18 @@ Expr *make_while_loop(std::vector<Token> &tok)
 
 	WhileLoop* wl = new WhileLoop(while_location,cond_part,body_part);
 	return wl;
+}
+
+std::vector<Token> gen_for_high(std::vector<Token> &tok)
+{
+	size_t i = 0;
+	std::vector<Token> high_tok;
+	while(tok[i].get_type() != RPAREN)
+	{
+		high_tok.push_back(tok[i]);
+		i++;
+	}
+	return high_tok;
 }
 
 Expr *make_for_loop(std::vector<Token> &tok)
@@ -771,16 +781,27 @@ Expr *make_for_loop(std::vector<Token> &tok)
 	Expr *cond = make_mathematical_expression(tok);
 	tok.erase(tok.begin());
 
-	Expr *high = make_assign(tok);
-	if(tok[0].get_type()!= RPAREN)
+	std::vector<Token> high_tok = gen_for_high(tok);
+	Expr *high = make_assign(high_tok);
+	while(tok[0].get_type()!= RPAREN)
 	{
-		printf("Error, expected RPAREN token\n");
-		exit(5);
+		if(tok.empty())
+		{
+			printf("Error, expected RPAREN token\n");
+			exit(5);
+		}
+		tok.erase(tok.begin());
 	}
 	tok.erase(tok.begin());
+	std::cout<<std::endl<<gen_tok_string(tok)<<std::endl;
+	std::cout<<"GEN DU BODY\n";
 	std::vector<Token> body_tok = gen_body_vect(tok);
 	Expr *body = make_seq(body_tok);
-	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);	
+	while(tok[0].get_type() != RBRACE)
+	{
+		tok.erase(tok.begin());
+	}
+	tok.erase(tok.begin());
 
 	return new ForLoop(for_location, decl, cond, high, body);
 }
@@ -823,7 +844,7 @@ Expr * make_assign(std::vector<Token> &tok)
 	Expr* rhs = parse_assign(tok);
 	if(tok[0].get_type() == SEMICOLON)
 		tok.erase(tok.begin());
-	else
+	else if(!tok.empty())
 	{
 		printf("Unexpected token after assign\n");
 		exit(5);
