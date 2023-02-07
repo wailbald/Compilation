@@ -551,8 +551,15 @@ Expr * make_mathematical_expression(std::vector<Token> &tok)
 	std::vector<Token> npi = negatif(tok);
 	npi = turntoNPI(npi);
 	Expr * expr = math_expr(npi);
+	int paren_count = 0;
 	while(tok[0].get_type()!=SEMICOLON && tok.size())
 	{
+		if(tok[0].get_type()==LPAREN)
+			paren_count++;
+		if(tok[0].get_type()==RPAREN)
+			paren_count--;
+		if(paren_count<0)
+			break;
 		tok.erase(tok.begin());
 	}
 	return expr;
