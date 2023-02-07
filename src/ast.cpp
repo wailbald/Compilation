@@ -102,6 +102,7 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 	std::vector<Token> out;
 	std::vector<Token> stack;
 	int i = 0;
+	int paren = 0;
 
 	while(tok[i].get_type() != SEMICOLON && !tok.empty())
 	{
@@ -133,11 +134,22 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 		}
 		else if(tok[i].get_type() == LPAREN)
 		{
+			paren ++;
 			stack.push_back(tok[i]);
 			tok.erase(tok.begin());
 		}
 		else if(tok[i].get_type() == RPAREN)
 		{
+			paren --;
+			if(paren < 0)
+			{
+				while(!stack.empty())
+				{
+					out.push_back(stack.back());
+					stack.pop_back();
+				}
+				return out;
+			}
 			while(stack.back().get_type() != LPAREN)
 			{
 				out.push_back(stack.back());
