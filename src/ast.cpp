@@ -677,8 +677,9 @@ Expr* make_funcall(std::vector<Token> &tok)
 {
 	location funcall_location=tok[0].get_loc();
 	Token token_id = tok[0];
-	tok.erase(tok.begin(),tok.begin()+1);
-	
+	tok.erase(tok.begin());
+	tok.erase(tok.begin());
+	std::cout<<std::endl<<gen_tok_string(tok)<<std::endl;
 	std::vector<Expr *> args = parse_func_args(tok);
 
 	return new FunCall(funcall_location,args,token_id.get_text());
