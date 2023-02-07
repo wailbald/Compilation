@@ -6,11 +6,12 @@ std::unordered_map<std::string, Expr> func_map;
 
 std::vector<Token> negatif(std::vector<Token> &tok)
 { 
-	for(int i = 0; tok[i].get_type() != SEMICOLON && tok.size(); i++)
+	for(unsigned long i = 0; tok[i].get_type() != SEMICOLON && i < tok.size() && tok.size(); i++)
 	{
-		std::cout << "i = " << i << " taille = " << tok.capacity() << std::endl;
+		std::cout << "i = " << i << " taille = " << tok.size() << std::endl;
 		if(tok[i].get_type() == MINUS && i > 1)
 		{
+			std::cout << "on y est" << std::endl;
 			if(tok[i-1].get_type() != RPAREN && tok[i-1].get_type() != ID && tok[i-1].get_type() != STR 
 				&& tok[i-1].get_type() != CHAR && tok[i-1].get_type() != INT && tok[i-1].get_type() != DOUBLE)
 			{
@@ -19,7 +20,7 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 					std::cout << "on est ici" << std::endl;
 					int paren = 1;
 					int j = i+2;
-					while(paren != 0)
+					while(paren <= 0)
 					{
 						std::cout << "j = " << j << std::endl;
 						std::cout << "paren = " << paren << std::endl;
@@ -34,15 +35,15 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 					std::cout << "la" << std::endl;
 					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
 				}
-				else
+			else
 				{
 					std::cout << "sinon on est la" << std::endl;
 					tok.insert(tok.begin()+i+1,Token(RPAREN,(location){0,0}));
 					std::cout << "la" << std::endl;
 				}
-				std::cout << "la" << std::endl;
-				tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
-				tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
+			std::cout << "la" << std::endl;
+			tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
+			tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
 			}
 		}
 	}
@@ -102,7 +103,7 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 	std::vector<Token> stack;
 	int i = 0;
 
-	while(tok[i].get_type() != SEMICOLON && tok.size())
+	while(tok[i].get_type() != SEMICOLON && !tok.empty())
 	{
 		if(tok[i].get_type() == ID || tok[i].get_type() == STR || tok[i].get_type() == CHAR
 			|| tok[i].get_type() == INT|| tok[i].get_type() == DOUBLE)
