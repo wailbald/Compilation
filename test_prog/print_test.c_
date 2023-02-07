@@ -1,8 +1,8 @@
-int a = 2
-int b = 5
-double f = 22.5
+int a = 2;
+int b = 5;
+double f = 22.5;
 
-print_int(a)
-print_int(b)
-print_double(a)
-print("abc")
+print_int(a);
+print_int(b);
+print_double(a);
+print("abc");

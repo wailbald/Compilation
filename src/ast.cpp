@@ -8,23 +8,17 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 { 
 	for(unsigned long i = 0; tok[i].get_type() != SEMICOLON && i < tok.size() && tok.size(); i++)
 	{
-		std::cout << "i = " << i << " taille = " << tok.size() << std::endl;
 		if(tok[i].get_type() == MINUS && i > 1)
 		{
-			std::cout << "on y est" << std::endl;
 			if(tok[i-1].get_type() != RPAREN && tok[i-1].get_type() != ID && tok[i-1].get_type() != STR 
 				&& tok[i-1].get_type() != CHAR && tok[i-1].get_type() != INT && tok[i-1].get_type() != DOUBLE)
 			{
 				if(tok[i+1].get_type() == LPAREN)
 				{
-					std::cout << "on est ici" << std::endl;
 					int paren = 1;
 					int j = i+2;
 					while(paren <= 0)
 					{
-						std::cout << "j = " << j << std::endl;
-						std::cout << "paren = " << paren << std::endl;
-						std::cout << token_name[tok[j].get_type()] << std::endl;
 						if(tok[j].get_type() == LPAREN)
 							paren ++;
 						if(tok[j].get_type() == RPAREN)
@@ -32,16 +26,12 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 
 						j++;
 					}
-					std::cout << "la" << std::endl;
 					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
 				}
 			else
 				{
-					std::cout << "sinon on est la" << std::endl;
 					tok.insert(tok.begin()+i+1,Token(RPAREN,(location){0,0}));
-					std::cout << "la" << std::endl;
 				}
-			std::cout << "la" << std::endl;
 			tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
 			tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
 			}
@@ -663,7 +653,6 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 	std::vector<Expr *> args;
 	while(tok[0].get_type() != RPAREN)
 	{
-		std::cout<<"parse_arg: "<<gen_tok_string(tok)<<std::endl;
 		std::string line = gen_tok_string(tok);
 		std::smatch match;
 		line.insert(0,"#/#");
@@ -674,15 +663,14 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 		if(std::regex_search(line,match,pOP_regex))
 		{
 			args.push_back(make_mathematical_expression(tok));
-			std::cout<<"parse_arg MATH: "<<gen_tok_string(tok)<<std::endl;
 		}
 		else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
 		{
 			args.push_back(make_string_literal(tok[0]));
+			tok.erase(tok.begin());	
 		}
 		else
 		{
-			std::cout<<tok[0]<<std::endl;
 			printf("Error: Wrong token in argument part\n");
 			exit(5);
 		}
@@ -701,7 +689,6 @@ Expr* make_funcall(std::vector<Token> &tok)
 	Token token_id = tok[0];
 	tok.erase(tok.begin());
 	tok.erase(tok.begin());
-	std::cout<<std::endl<<gen_tok_string(tok)<<std::endl;
 	std::vector<Expr *> args = parse_func_args(tok);
 
 	return new FunCall(funcall_location,args,token_id.get_text());
@@ -785,7 +772,6 @@ Expr *make_for_loop(std::vector<Token> &tok)
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
 	std::smatch match;
-	std::cout<<line<<std::endl;
 	if(tok[0].get_type() == SEMICOLON)
 	{
 		decl = NULL;
@@ -800,7 +786,6 @@ Expr *make_for_loop(std::vector<Token> &tok)
 		decl = make_assign(tok);
 	}
 	
-	std::cout<<gen_tok_string(tok)<<std::endl;
 	Expr *cond = make_mathematical_expression(tok);
 	tok.erase(tok.begin());
 
@@ -816,8 +801,6 @@ Expr *make_for_loop(std::vector<Token> &tok)
 		tok.erase(tok.begin());
 	}
 	tok.erase(tok.begin());
-	std::cout<<std::endl<<gen_tok_string(tok)<<std::endl;
-	std::cout<<"GEN DU BODY\n";
 	std::vector<Token> body_tok = gen_body_vect(tok);
 	Expr *body = make_seq(body_tok);
 	while(tok[0].get_type() != RBRACE)
@@ -849,7 +832,6 @@ Expr * parse_assign(std::vector<Token> &tok)
 	}
 	else
 	{
-		std::cout<<line<<std::endl;
 		printf("Error: Wrong right part of assign expression\n");
 		exit(5);
 	}
@@ -910,7 +892,6 @@ Expr * parse_token(std::vector<Token> &tok)
 	std::smatch match;
 	std::string line = gen_tok_string(tok);
 	line.insert(0,"#/#");
-	std::cout<<"----------------------------------------\n"<<line<<std::endl;
 	if(std::regex_search(line,match,pRETURN_regex))
 	{
 		return make_return(tok);
