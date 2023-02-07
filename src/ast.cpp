@@ -664,11 +664,11 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 		if(std::regex_search(line,match,pOP_regex))
 		{
 			args.push_back(make_mathematical_expression(tok));
+			std::cout<<"parse_arg MATH: "<<gen_tok_string(tok)<<std::endl;
 		}
 		else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
 		{
 			args.push_back(make_string_literal(tok[0]));
-			tok.erase(tok.begin());
 		}
 		else
 		{
