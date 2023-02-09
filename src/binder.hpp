@@ -9,12 +9,11 @@ class Binder{
 	std::vector<scope> scopes;
 	std::vector<FunDecl> function;
 	std::vector<Loop> loop;
-	int depth = 0;
 	void scope_push();
 	void scope_pop();
 	scope actuel();
-	void verif(Decl decl);
-	Decl cherche(std::string);
+	void verif(Decl *decl);
+	Decl *cherche(std::string);
 
 public:
 	Binder();

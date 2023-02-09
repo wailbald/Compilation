@@ -15,17 +15,17 @@ scope actuel()
 	return scopes.back();
 }
 
-void verif(Decl decl)
+void verif(Decl *decl)
 {
 	scope s = actuel();
-	auto precedent = s.find(decl.name);
+	auto precedent = s.find(decl->name);
 
 	if(precedent != s.end())
 	{
-		std::cout << decl.name << "already defined" << std::endl;
+		std::cout << decl->name << "already defined" << std::endl;
 		exit(5);
 	}
-	s[decl.name] = &decl;
+	s[decl->name] = decl;
 }
 
 Binder::Binder()
@@ -33,14 +33,14 @@ Binder::Binder()
 	scope_push();
 }
 
-Decl cherche(std::string name)
+Decl *cherche(std::string name)
 {
 	for(auto s = scopes.crbegin(); s != scopes.crend(); s++)
 	{
 		auto decl = s->find(name);
 		if(decl != s->cend())
 		{
-			return *decl->second;
+			return decl->second;
 		}
 	}
 	std::cout << "function " << name << std::endl;
