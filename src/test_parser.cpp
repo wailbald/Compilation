@@ -1,5 +1,7 @@
 #include "lexer.hpp"
+#include "dumper.hpp"
 #include "ast.hpp"
+
 
 int main(int argc, char** argv)
 {
@@ -10,7 +12,8 @@ int main(int argc, char** argv)
 	}
 	std::vector<Token> tok = lexer(argv[1]);
 	Tree prog = parser(tok);
-
+	ASTDumper dumper(&std::cout);
+	prog.root->accept(dumper);
 
 	return 0;
 }

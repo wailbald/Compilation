@@ -1,8 +1,6 @@
 #include "ast.hpp"
 
-std::unordered_map<std::string, Expr> func_map;
-
-
+std::unordered_map<std::string, Expr*> func_map;
 
 std::vector<Token> negatif(std::vector<Token> &tok)
 { 
@@ -83,7 +81,7 @@ int priorite(Token tok)
 void func_npi(int a, std::vector<Token> &t)
 {
 	auto call = make_funcall(t);
-	func_map[std::to_string(a)] = *call;
+	func_map[std::to_string(a)] = call;
 }
 
 std::vector<Token> turntoNPI(std::vector<Token> &tok)
@@ -399,7 +397,7 @@ Expr *math_expr(std::vector<Token> &tok)
 			if(decl != func_map.cend())
 			{
 				tok.erase(tok.begin()+j);
-				return &decl->second;
+				return decl->second;
 			}
 			else
 			{
@@ -957,7 +955,6 @@ Expr * parse_token(std::vector<Token> &tok)
 		tok.erase(tok.begin());
 		return make_string_literal(tok__);
 	}
-	return new Expr();
 }
 
 Expr * make_seq(std::vector<Token> &tok)

@@ -8,38 +8,75 @@
 #include <unordered_map>
 
 class Node;
+class IntegerLiteral;
+class DoubleLiteral;
+class StringLiteral;
+class BinaryOperator;
+class UnaryOperator;
+class Sequence;
+class Return;
+class Identifier;
+class IfThenElse;
+class VarDecl;
+class FunDecl;
+class FunCall;
+class WhileLoop;
+class ForLoop;
+class Break;
+class Assign;
+
+class Visitor{
+public:
+	virtual void visit(IntegerLiteral &) = 0;
+  virtual void visit(DoubleLiteral &)= 0;
+  virtual void visit(StringLiteral &)= 0;
+  virtual void visit(BinaryOperator &)= 0;
+  virtual void visit(UnaryOperator &)= 0;
+  virtual void visit(Sequence &)= 0;
+  virtual void visit(Return &)= 0;
+  virtual void visit(Identifier &)= 0;
+  virtual void visit(IfThenElse &)= 0;
+  virtual void visit(VarDecl &)= 0;
+  virtual void visit(FunDecl &)= 0;
+  virtual void visit(FunCall &)= 0;
+  virtual void visit(WhileLoop &)= 0;
+  virtual void visit(ForLoop &)= 0;
+  virtual void visit(Break &)= 0;
+  virtual void visit(Assign &)= 0;
+};
 
 class Tree
 {
-	Node *root;
-
 	public:
+		Node *root;
 		Tree(){};
 		Tree(Node *root_) : root(root_) {};
 		Node *get_root(){return this->root;};
 };
 
 typedef enum { t_undef = 0, t_int, t_double, t_string, t_void, t_tab } Type;
-static std::string type_name[] = {"t_undef","int","string","void","tab"};
+static std::string type_name[] = {"t_undef","int","double","string","void","tab"};
 
 typedef enum { o_plus, o_minus, o_div, o_mult, o_module, o_lshift, o_rshift, o_and, o_or, o_xor, o_comp, o_not, c_eq, c_neq, c_lt, c_gt, c_le, c_ge, c_and, c_or} Operation;
 static std::string operation_name[] = { "+", "-", "/", "*", "%", "<<", ">>", "&", "|", "^", "~", "!", "==", "!=", "<", ">", "<=", ">=", "&&", "||"};
-
-class visitor{};
 
 class Node{	
 public:
 	location loc;
 	Node() {};
 	Node(location loc_) : loc(loc_){};
+	virtual ~Node() {};
 
-	void accept(visitor v);
+	virtual void accept(Visitor &visitor) = 0;
 };
 
 class Expr: public Node {
 public:
 	Expr(): Node() {};
 	Expr(location &loc_) : Node(loc_) {};
+	virtual ~Expr() {};
+
+	virtual void accept(Visitor &visitor) = 0;
 };
 
 class Decl: public Expr {
@@ -50,6 +87,7 @@ public:
 
 	Decl(location loc_,std::string _name,Type _type, int depth_ = -1)
       : Expr(loc_), name(_name), type(_type), depth(depth_) {};
+  virtual ~Decl() {};
 
     void set_depth(int _depth) {
     	if(depth == -1 && _depth != -1)
@@ -65,7 +103,7 @@ public:
 
 	IntegerLiteral(location loc_,int32_t _value)
       : Expr(loc_), value(_value) {};
-
+  void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class DoubleLiteral : public Expr {
@@ -74,7 +112,7 @@ public:
 
 	DoubleLiteral(location loc_,double _value)
       : Expr(loc_), value(_value) {};
-
+	void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class StringLiteral : public Expr{
@@ -83,7 +121,7 @@ public:
 
 	StringLiteral(location loc_ ,std::string value_)
       : Expr(loc_), value(value_) {};
-
+  void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class BinaryOperator : public Expr {
@@ -105,6 +143,8 @@ public:
 
   Expr *get_left(){return left;};
   Expr *get_right(){return right;};
+
+  void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class UnaryOperator : public Expr {
@@ -123,6 +163,8 @@ public:
   };
 
   Expr *get_expr(){return expr;};
+
+  void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
   class Sequence : public Expr{
@@ -138,7 +180,10 @@ public:
   	}
 
   	std::vector<Expr *> get_exprs() { return exprs; };
-  };
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
+ };
 
 class Identifier : public Expr {
 	Decl *decl = nullptr;
@@ -161,7 +206,9 @@ public:
     	if(depth == -1 && _depth != -1)
       	depth = _depth;
   	}
-  	int get_depth(){return depth;};
+  int get_depth(){return depth;};
+
+  void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class IfThenElse : public Expr{
@@ -185,6 +232,9 @@ public:
   	Expr *get_condition(){return condition;};
   	Expr *get_then(){return then_part;};
   	Expr *get_else(){return else_part;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 };
 
 class VarDecl : public Decl {
@@ -203,13 +253,13 @@ public:
 
 	void set_escapes(){escapes = true;};
 	bool get_escapes(){return escapes;};
+
+	void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class FunDecl : public Decl {
 	std::vector<VarDecl *> params;
-	Expr *body;
-	std::string name;
-	
+	Expr *body;	
 
 public:
 	FunDecl(location _loc, std::string _name, Type _type_name, std::vector<VarDecl *> _params, Expr *_expr)
@@ -222,7 +272,10 @@ public:
   	}
 
   	std::vector<VarDecl *> &get_params(){return params;};
-  	Expr get_body(){return *body;};
+  	Expr *get_body(){return body;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 
 };
 
@@ -249,6 +302,9 @@ public:
   	};
 
   	FunDecl *get_decl(){return decl;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 };
 
 class Loop : public Expr{
@@ -271,6 +327,9 @@ public:
 
   	Expr *get_condition(){return condition;};
   	Expr *get_body(){return body;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 };
 
 class ForLoop : public Loop {
@@ -294,6 +353,9 @@ public:
   	Expr *get_cond() {return cond;};
   	Expr *get_high() {return high;};
   	Expr *get_body(){return body;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 };
 
 class Break : public Expr {
@@ -306,6 +368,8 @@ public:
 	}
 
 	Loop *get_loop(){return loop;}
+
+	void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class Return : public Expr {
@@ -320,6 +384,8 @@ public:
 
 	FunDecl *get_func(){return func;}
 	Expr *get_expr(){return expr;}
+
+	void accept(Visitor &visitor) { visitor.visit(*this); }
 };
 
 class Assign : public Expr{
@@ -336,6 +402,9 @@ public:
 
   	Identifier *get_lhs(){return lhs;};
   	Expr *get_rhs(){return rhs;};
+
+  	void accept(Visitor &visitor) { visitor.visit(*this); }
+
 };
 
 std::vector<Token> negatif(std::vector<Token> &tok);

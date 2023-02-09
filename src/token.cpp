@@ -10,3 +10,10 @@ std::ostream& operator<<(std::ostream& os, Token& tok)
 	return os;
 
 }
+
+std::ostream& operator<<(std::ostream& os, location& loc)
+{
+	os<<loc.line<<":"<<loc.col;
+	return os;
+
+}

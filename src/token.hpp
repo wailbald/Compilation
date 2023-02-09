@@ -150,6 +150,7 @@ static std::string token_name[] =
 typedef struct location{
 	size_t line;
 	size_t col;
+	friend std::ostream& operator<<(std::ostream& os, location& tok);
 } location;
 
 class Token

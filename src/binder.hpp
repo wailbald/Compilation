@@ -8,5 +8,5 @@ std::vector<Loop> loop;
 void scope_push();
 void scope_pop();
 scope actuel();
-void verif(Decl decl);
-Decl cherche(std::string);
+void verif(Decl *decl);
+Decl *cherche(std::string);
