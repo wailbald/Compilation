@@ -4,16 +4,17 @@
 
 typedef std::unordered_map<std::string, Decl*> scope;
 
-class Binder{
+class Binder: public Visitor{
 
 	std::vector<scope> scopes;
 	std::vector<FunDecl> function;
-	std::vector<Loop> loop;
+	std::vector<Loop *> loop;
+	int depth = 0;
 	void scope_push();
 	void scope_pop();
 	scope actuel();
 	void verif(Decl *decl);
-	Decl *cherche(std::string);
+	Decl *cherche(const location loc, std::string);
 
 public:
 	Binder();
