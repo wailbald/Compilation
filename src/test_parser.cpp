@@ -14,6 +14,7 @@ int main(int argc, char** argv)
 	Tree prog = parser(tok);
 	ASTDumper dumper(&std::cout);
 	prog.root->accept(dumper);
+	std::cout<<std::endl;
 
 	return 0;
 }

@@ -364,7 +364,7 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 		}
 		if(std::regex_search(line,match,STR_regex))
 		{
-			tok_line.push_back(Token(STR,(location){*line_num,*col_num},line.substr(match.position()+3,match.length()-3)));
+			tok_line.push_back(Token(STR,(location){*line_num,*col_num},line.substr(match.position()+4,match.length()-5)));
 			line.erase(match.position(),match.length());
 			*col_num= *col_num + match.length() - 3;
 			continue;
