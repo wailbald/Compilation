@@ -195,7 +195,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_plus;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *np = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *np = new BinaryOperator(l,le,dr,op);
 			return np;
 		}
 				
@@ -204,7 +206,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_minus;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nm = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nm = new BinaryOperator(l,le,dr,op);
 			return nm;
 		}
 				
@@ -213,7 +217,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_mult;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nt = new BinaryOperator(l,le,dr,op);
 			return nt;
 		}
 				
@@ -222,7 +228,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_div;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nd = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nd = new BinaryOperator(l,le,dr,op);
 			return nd;
 		}
 				
@@ -231,7 +239,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_module;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nmo = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nmo = new BinaryOperator(l,le,dr,op);
 			return nmo;
 		}
 				
@@ -240,7 +250,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_lshift;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nls = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nls = new BinaryOperator(l,le,dr,op);
 			return nls;
 		}
 				
@@ -249,7 +261,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_rshift;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nrs = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nrs = new BinaryOperator(l,le,dr,op);
 			return nrs;
 		}
 				
@@ -258,7 +272,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_and;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nand = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nand = new BinaryOperator(l,le,dr,op);
 			return nand;
 		}
 				
@@ -267,7 +283,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_or;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nor = new BinaryOperator(l,le,dr,op);
 			return nor;
 		}
 				
@@ -276,7 +294,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = o_xor;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nxor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nxor = new BinaryOperator(l,le,dr,op);
 			return nxor;
 		}
 				
@@ -303,7 +323,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_eq;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *neq = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *neq = new BinaryOperator(l,le,dr,op);
 			return neq;
 		}
 				
@@ -312,7 +334,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_neq;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nneq = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nneq = new BinaryOperator(l,le,dr,op);
 			return nneq;
 		}
 				
@@ -321,7 +345,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_lt;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nlt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nlt = new BinaryOperator(l,le,dr,op);
 			return nlt;
 		}
 				
@@ -330,7 +356,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_gt;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *ngt = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *ngt = new BinaryOperator(l,le,dr,op);
 			return ngt;
 		}
 				
@@ -339,7 +367,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_le;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nle = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nle = new BinaryOperator(l,le,dr,op);
 			return nle;
 		}
 				
@@ -348,7 +378,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_ge;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *nge = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *nge = new BinaryOperator(l,le,dr,op);
 			return nge;
 		}
 				
@@ -357,7 +389,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_and;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *ncand = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *ncand = new BinaryOperator(l,le,dr,op);
 			return ncand;
 		}
 				
@@ -366,7 +400,9 @@ Expr *math_expr(std::vector<Token> &tok)
 			l = tok[j].get_loc();
 			op = c_or;
 			tok.erase(tok.begin()+j);
-			BinaryOperator *ncor = new BinaryOperator(l,math_expr(tok),math_expr(tok),op);
+			auto dr = math_expr(tok);
+			auto le = math_expr(tok);
+			BinaryOperator *ncor = new BinaryOperator(l,le,dr,op);
 			return ncor;
 		}
 				
