@@ -69,6 +69,7 @@ enum token_t {
 	TAB,		// tab
 
 	FUNCALL,	// Dummy Token for math expression
+	UMINUS,		// Dummy Token for negative expression
 
 	/* Other */
 
@@ -140,6 +141,7 @@ static std::string token_name[] =
 	"TAB",			// tab
 
 	"FUNCALL",		// Dummy Token for math expression
+	"UMINUS",		// Dummy Token for math expression
 
 	/* Other */
 

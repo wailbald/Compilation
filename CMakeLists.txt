@@ -34,7 +34,7 @@ set(TEST_PARSER_SRC
    ${TEST_PARSER_SRC}
    ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
-   #${CMAKE_CURRENT_SOURCE_DIR}/src/binder.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/binder.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/dumper.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_parser.cpp
@@ -44,7 +44,7 @@ set(HEADERS
    ${HEADERS}
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast_regex.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.hpp
-   #${CMAKE_CURRENT_SOURCE_DIR}/src/binder.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/binder.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/dumper.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.hpp   
    ${CMAKE_CURRENT_SOURCE_DIR}/src/token.hpp
