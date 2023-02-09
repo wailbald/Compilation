@@ -1,0 +1,14 @@
+int a = 2;
+int b = 3;
+if(a<b)
+{
+	return b;
+}
+else
+{
+	return a;
+}
+
+print("Le maximum est: ");
+print_int(a);
+print_int(b);

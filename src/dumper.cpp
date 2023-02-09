@@ -62,17 +62,15 @@ void ASTDumper::visit(UnaryOperator &binop) {
 }
 
 void ASTDumper::visit(Sequence &seqExpr) {
-  *ostream << "(";
+  *ostream << "{";
   inc();
   auto exprs = seqExpr.get_exprs();
   for (auto expr = exprs.cbegin(); expr != exprs.cend(); expr++) {
-    if (expr != exprs.cbegin())
-      *ostream << ';';
     nl();
     (*expr)->accept(*this);
   }
   dnl();
-  *ostream << ")";
+  *ostream << "}";
 }
 
 void ASTDumper::visit(Identifier &id) {
@@ -89,9 +87,7 @@ void ASTDumper::visit(Identifier &id) {
 
 void ASTDumper::visit(IfThenElse &ite) {
   *ostream << "if ";
-  inl();
   ite.get_condition()->accept(*this);
-  dnl();
   inl();
   ite.get_then()->accept(*this);
   dnl();
@@ -122,12 +118,9 @@ void ASTDumper::visit(FunDecl &decl) {
     (*param)->accept(*this);
   }
   *ostream << ")";
-  *ostream << "{";
   inl();
   decl.get_body()->accept(*this);
   dec();
-  *ostream << "}";
-  nl();
 }
 
 void ASTDumper::visit(FunCall &call) {
@@ -152,11 +145,9 @@ void ASTDumper::visit(WhileLoop &loop) {
   *ostream << "(";
   loop.get_condition()->accept(*this);
   *ostream << ')';
-  *ostream << "{ ";
   inl();
   loop.get_body()->accept(*this);
   dec();
-  *ostream << "}";
   nl();
 }
 
@@ -167,11 +158,10 @@ void ASTDumper::visit(ForLoop &loop) {
   loop.get_cond()->accept(*this);
   *ostream << "; ";
   loop.get_high()->accept(*this);
-  *ostream << "){";
+  *ostream << ")";
   inl();
   loop.get_body()->accept(*this);
   dec();
-  *ostream << "}";
   nl();
 }
 

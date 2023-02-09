@@ -678,8 +678,9 @@ Decl* make_fundecl(std::vector<Token> &tok)
 	std::vector<VarDecl *> params = parse_func_params(tok);
 
 	std::vector<Token> body_tok = gen_body_vect(tok);
+	size_t size = body_tok.size();
 	Expr *body_part = make_seq(body_tok);
-	tok.erase(tok.begin(),tok.begin()+body_tok.size()+1);
+	tok.erase(tok.begin(),tok.begin()+size+2);
 
 	return new FunDecl(fundecl_location, token_id.get_text(), get_decl_type(token_decl),params, body_part);	
 }
@@ -699,7 +700,7 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 		}
 		if(tok[0].get_type() == STR)
 		{
-			make_string_literal(tok[0]);
+			args.push_back(make_string_literal(tok[0]));
 			tok.erase(tok.begin());	
 			continue;
 		}
@@ -711,12 +712,6 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 		if(std::regex_search(line,match,pOP_regex))
 		{
 			args.push_back(make_mathematical_expression(tok));
-			continue;
-		}
-		else if(std::regex_search(line,match,pSTRINGLITERAL_regex))
-		{
-			args.push_back(make_string_literal(tok[0]));
-			tok.erase(tok.begin());	
 			continue;
 		}
 		else
