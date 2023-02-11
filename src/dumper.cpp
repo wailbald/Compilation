@@ -99,12 +99,14 @@ void ASTDumper::visit(IfThenElse &ite) {
 
 void ASTDumper::visit(VarDecl &decl) {
   *ostream <<type_name[decl.type] <<" ";
-  *ostream << decl.name;
   if (verbose && decl.get_escapes())
     *ostream << "/*e*/";
   if (auto expr = decl.get_expr()) {
-    *ostream << " = ";
     expr->accept(*this);
+  }
+  else
+  {
+    *ostream << decl.name;
   }
 }
 

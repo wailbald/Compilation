@@ -38,6 +38,7 @@ set(TEST_PARSER_SRC
    ${CMAKE_CURRENT_SOURCE_DIR}/src/dumper.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/ast.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_parser.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/type_checker.cpp
 )
 
 set(HEADERS
@@ -48,6 +49,7 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/src/dumper.hpp
    ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.hpp   
    ${CMAKE_CURRENT_SOURCE_DIR}/src/token.hpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/type_checker.hpp
 )
 
 #add_executable(c_compiler ${SOURCE} ${HEADERS})

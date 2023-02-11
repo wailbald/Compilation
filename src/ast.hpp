@@ -45,6 +45,26 @@ public:
   virtual void visit(Assign &)= 0;
 };
 
+class INTVisitor{
+public:
+	virtual int visit(IntegerLiteral &) = 0;
+  virtual int visit(DoubleLiteral &)= 0;
+  virtual int visit(StringLiteral &)= 0;
+  virtual int visit(BinaryOperator &)= 0;
+  virtual int visit(UnaryOperator &)= 0;
+  virtual int visit(Sequence &)= 0;
+  virtual int visit(Return &)= 0;
+  virtual int visit(Identifier &)= 0;
+  virtual int visit(IfThenElse &)= 0;
+  virtual int visit(VarDecl &)= 0;
+  virtual int visit(FunDecl &)= 0;
+  virtual int visit(FunCall &)= 0;
+  virtual int visit(WhileLoop &)= 0;
+  virtual int visit(ForLoop &)= 0;
+  virtual int visit(Break &)= 0;
+  virtual int visit(Assign &)= 0;
+};
+
 class Tree
 {
 	public:
@@ -68,6 +88,7 @@ public:
 	virtual ~Node() {};
 
 	virtual void accept(Visitor &visitor) = 0;
+	virtual int accept(INTVisitor &visitor) = 0;
 };
 
 class Expr: public Node {
@@ -77,6 +98,7 @@ public:
 	virtual ~Expr() {};
 
 	virtual void accept(Visitor &visitor) = 0;
+	virtual int accept(INTVisitor &visitor) = 0;
 };
 
 class Decl: public Expr {
@@ -104,6 +126,7 @@ public:
 	IntegerLiteral(location loc_,int32_t _value)
       : Expr(loc_), value(_value) {};
   void accept(Visitor &visitor) { visitor.visit(*this); }
+  int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class DoubleLiteral : public Expr {
@@ -113,6 +136,7 @@ public:
 	DoubleLiteral(location loc_,double _value)
       : Expr(loc_), value(_value) {};
 	void accept(Visitor &visitor) { visitor.visit(*this); }
+	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class StringLiteral : public Expr{
@@ -122,6 +146,7 @@ public:
 	StringLiteral(location loc_ ,std::string value_)
       : Expr(loc_), value(value_) {};
   void accept(Visitor &visitor) { visitor.visit(*this); }
+  int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class BinaryOperator : public Expr {
@@ -145,6 +170,7 @@ public:
   Expr *get_right(){return right;};
 
   void accept(Visitor &visitor) { visitor.visit(*this); }
+  int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class UnaryOperator : public Expr {
@@ -165,6 +191,7 @@ public:
   Expr *get_expr(){return expr;};
 
   void accept(Visitor &visitor) { visitor.visit(*this); }
+  int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
   class Sequence : public Expr{
@@ -182,7 +209,7 @@ public:
   	std::vector<Expr *> get_exprs() { return exprs; };
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
  };
 
 class Identifier : public Expr {
@@ -209,6 +236,7 @@ public:
   int get_depth(){return depth;};
 
   void accept(Visitor &visitor) { visitor.visit(*this); }
+  int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class IfThenElse : public Expr{
@@ -234,7 +262,7 @@ public:
   	Expr *get_else(){return else_part;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class VarDecl : public Decl {
@@ -255,6 +283,7 @@ public:
 	bool get_escapes(){return escapes;};
 
 	void accept(Visitor &visitor) { visitor.visit(*this); }
+	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class FunDecl : public Decl {
@@ -275,8 +304,7 @@ public:
   	Expr *get_body(){return body;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class FunCall : public Expr {
@@ -304,7 +332,7 @@ public:
   	FunDecl *get_decl(){return decl;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class Loop : public Expr{
@@ -329,7 +357,7 @@ public:
   	Expr *get_body(){return body;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class ForLoop : public Loop {
@@ -355,7 +383,7 @@ public:
   	Expr *get_body(){return body;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class Break : public Expr {
@@ -370,6 +398,7 @@ public:
 	Loop *get_loop(){return loop;}
 
 	void accept(Visitor &visitor) { visitor.visit(*this); }
+	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class Return : public Expr {
@@ -386,6 +415,7 @@ public:
 	Expr *get_expr(){return expr;}
 
 	void accept(Visitor &visitor) { visitor.visit(*this); }
+	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 class Assign : public Expr{
@@ -404,7 +434,7 @@ public:
   	Expr *get_rhs(){return rhs;};
 
   	void accept(Visitor &visitor) { visitor.visit(*this); }
-
+  	int accept(INTVisitor &visitor) { return visitor.visit(*this); }
 };
 
 std::vector<Token> negatif(std::vector<Token> &tok);

@@ -28,7 +28,7 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 				}
 			else
 				{
-					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
+					tok.insert(tok.begin()+i+1,Token(RPAREN,(location){0,0}));
 				}
 			tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
 			tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));

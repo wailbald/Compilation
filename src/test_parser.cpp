@@ -1,6 +1,7 @@
 #include "lexer.hpp"
 #include "dumper.hpp"
 #include "ast.hpp"
+#include "type_checker.hpp"
 
 
 int main(int argc, char** argv)
