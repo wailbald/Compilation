@@ -6,7 +6,13 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 { 
 	for(unsigned long i = 0; tok[i].get_type() != SEMICOLON && i < tok.size() && tok.size(); i++)
 	{
-		if(tok[i].get_type() == MINUS && i > 1)
+		if(i == 0 && tok[i].get_type() == MINUS)
+		{
+			tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
+			tok.insert(tok.begin(),Token(INT,(location){0,0},"0"));
+			tok.insert(tok.begin(),Token(LPAREN,(location){0,0}));
+		}
+		if(tok[i].get_type() == MINUS && i >= 1)
 		{
 			if(tok[i-1].get_type() != RPAREN && tok[i-1].get_type() != ID && tok[i-1].get_type() != STR 
 				&& tok[i-1].get_type() != CHAR && tok[i-1].get_type() != INT && tok[i-1].get_type() != DOUBLE)
@@ -73,7 +79,6 @@ int priorite(Token tok)
 	
 	if(tok.get_type() == COR)
 		return 1;
-	std::cout<<token_name[tok.get_type()];
 	std::cout << " symbole non defini" << std::endl;
 	exit(4);
 }
@@ -86,6 +91,7 @@ void func_npi(int a, std::vector<Token> &t)
 
 std::vector<Token> turntoNPI(std::vector<Token> &tok)
 {
+
 	int id = 1;
 	std::vector<Token> out;
 	std::vector<Token> stack;
@@ -184,6 +190,7 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 
 Expr *math_expr(std::vector<Token> &tok)
 {	
+
 	size_t j = tok.size()-1;
 	location l;
 	Operation op;
