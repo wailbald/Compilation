@@ -2,6 +2,7 @@
 #include "dumper.hpp"
 #include "ast.hpp"
 #include "type_checker.hpp"
+#include "binder.hpp"
 
 
 int main(int argc, char** argv)
@@ -13,7 +14,9 @@ int main(int argc, char** argv)
 	}
 	std::vector<Token> tok = lexer(argv[1]);
 	Tree prog = parser(tok);
+	Binder bind;
 	ASTDumper dumper(&std::cout);
+	prog.root->accept(bind);
 	prog.root->accept(dumper);
 	std::cout<<std::endl;
 

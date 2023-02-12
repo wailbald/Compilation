@@ -10,27 +10,73 @@ void Binder::scope_pop()
 	scopes.pop_back();
 }
 
-scope Binder::actuel()
+scope &Binder::actuel()
 {
 	return scopes.back();
 }
 
 void Binder::verif(Decl *decl)
 {
-	scope s = actuel();
+	scope &s = actuel();
 	auto precedent = s.find(decl->name);
 
-	if(precedent != s.end())
+	if(precedent != s.cend())
 	{
 		std::cout << decl->name << "already defined" << std::endl;
 		exit(5);
 	}
-	s[decl->name] = decl;
+	s.insert({decl->name, decl});
+}
+
+void Binder::verif_func(Decl *decl)
+{
+	auto precedent = scopes.begin()->find(decl->name);
+
+	if(precedent != scopes.begin()->cend())
+	{
+		std::cout << decl->name << "already defined" << std::endl;
+		exit(5);
+	}
+	scopes.begin()->insert({decl->name, decl});
 }
 
 Binder::Binder()
 {
 	scope_push();
+
+	primitif("print_err", t_void, {t_string});
+	primitif("print", t_void, {t_string});
+	primitif("print_int", t_void, {t_int});
+	primitif("print_float", t_void, {t_double});
+	primitif("flush", t_void, {});
+	primitif("getchar", t_string, {});
+	primitif("ord", t_int, {t_string});
+	primitif("chr", t_string, {t_int});
+	primitif("size", t_int, {t_string});
+	primitif("substring", t_string, {t_string, t_int, t_int});
+	primitif("concat", t_string, {t_string, t_string});
+	primitif("strcmp", t_int, {t_string, t_string});
+	primitif("streq", t_int, {t_string, t_string});
+	primitif("exit", t_void, {t_int});
+
+}
+
+void Binder::primitif(std::string name, Type type,
+			  std::vector<Type> arg)
+{
+	std::vector<VarDecl *> args;
+  	int counter = 0;
+  	for (Type tn : arg) 
+  	{
+    	std::ostringstream argname;
+    	argname << "a_" << counter++;
+    	args.push_back(
+    	new VarDecl((location){0,0}, argname.str(), tn, nullptr));
+  	}
+
+  FunDecl *fd = new FunDecl((location){0,0}, name, type, std::move(args), nullptr);
+
+  verif(fd);
 }
 
 Decl *Binder::cherche(const location loc, std::string name)
@@ -43,7 +89,7 @@ Decl *Binder::cherche(const location loc, std::string name)
 			return decl->second;
 		}
 	}
-	std::cout << "function " << name << std::endl;
+	std::cout << "not found in the scope " << name << std::endl;
 	exit(6);
 }
 
@@ -117,12 +163,12 @@ void Binder::visit(IfThenElse &ite)
 
 void Binder::visit(VarDecl &var)
 {
+	verif(&var);
+	var.set_depth(depth);
 	if(var.get_expr())
 	{
 		var.get_expr()->accept(*this);
 	}
-	verif(&var);
-	var.set_depth(depth);
 }
 
 void Binder::visit(FunDecl &f_decl)
@@ -130,6 +176,9 @@ void Binder::visit(FunDecl &f_decl)
 	function.push_back(f_decl);
 	scope_push();
 	depth++;
+
+	f_decl.set_depth(depth);
+	verif_func(&f_decl);
 
 	for(auto p : f_decl.get_params())
 	{

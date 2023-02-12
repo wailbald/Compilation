@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <boost/optional.hpp>
 #include "ast.hpp"
 
 typedef std::unordered_map<std::string, Decl*> scope;
@@ -12,12 +13,15 @@ class Binder: public Visitor{
 	int depth = 0;
 	void scope_push();
 	void scope_pop();
-	scope actuel();
+	scope &actuel();
 	void verif(Decl *decl);
+	void verif_func(Decl *decl);
 	Decl *cherche(const location loc, std::string);
 
 public:
 	Binder();
+	void primitif(std::string name, Type type,
+			  	  std::vector<Type> arg);
 	void visit(IntegerLiteral &i);
 	void visit(StringLiteral &str);
 	void visit(DoubleLiteral &dou);
