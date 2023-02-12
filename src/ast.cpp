@@ -655,11 +655,12 @@ std::vector<VarDecl *> parse_func_params(std::vector<Token> &tok)
 		location decl_loc = tok[0].get_loc();
 		Token token_decl = tok[0];
 		Token token_id = tok[1];
-		tok.erase(tok.begin(),tok.begin()+1);
+		tok.erase(tok.begin());
+		tok.erase(tok.begin());
 
 		params.push_back(new VarDecl(decl_loc,token_id.get_text(),get_decl_type(token_decl),NULL));
 
-		if(tok[0].get_type() == COLON)
+		if(tok[0].get_type() == COMMA)
 			tok.erase(tok.begin());
 	}
 	if(tok.size())
@@ -680,7 +681,9 @@ Decl* make_fundecl(std::vector<Token> &tok)
 	Token token_decl = tok[0];
 	Token token_id = tok[1];
 
-	tok.erase(tok.begin(),tok.begin()+1);
+	tok.erase(tok.begin());
+	tok.erase(tok.begin());
+	tok.erase(tok.begin());
 
 	std::vector<VarDecl *> params = parse_func_params(tok);
 
