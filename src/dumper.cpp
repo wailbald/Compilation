@@ -99,8 +99,6 @@ void ASTDumper::visit(IfThenElse &ite) {
 
 void ASTDumper::visit(VarDecl &decl) {
   *ostream <<type_name[decl.type] <<" ";
-  if (verbose && decl.get_escapes())
-    *ostream << "/*e*/";
   if (auto expr = decl.get_expr()) {
     expr->accept(*this);
   }
@@ -176,7 +174,7 @@ void ASTDumper::visit(Break &brk) {
 void ASTDumper::visit(Return &brk) {
   *ostream << "return ";
   if (verbose && brk.get_func())
-    *ostream << "/*loop:" << brk.get_func()->loc << "*/";
+    *ostream << "/*func:" << brk.get_func()->loc << "*/";
   brk.get_expr()->accept(*this);
 }
 

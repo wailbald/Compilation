@@ -37,6 +37,7 @@ void Binder::verif_func(Decl *decl)
 		std::cout << decl->name << "already defined" << std::endl;
 		exit(5);
 	}
+
 	scopes.begin()->insert({decl->name, decl});
 }
 
@@ -165,6 +166,7 @@ void Binder::visit(VarDecl &var)
 {
 	verif(&var);
 	var.set_depth(depth);
+
 	if(var.get_expr())
 	{
 		var.get_expr()->accept(*this);
@@ -188,7 +190,6 @@ void Binder::visit(FunDecl &f_decl)
 
 	scope_pop();
 	depth--;
-	function.pop_back();
 }
 
 void Binder::visit(FunCall &f_call)
