@@ -12,6 +12,7 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 			tok.insert(tok.begin(),Token(INT,(location){0,0},"0"));
 			tok.insert(tok.begin(),Token(LPAREN,(location){0,0}));
 		}
+
 		if(tok[i].get_type() == MINUS && i >= 1)
 		{
 			if(tok[i-1].get_type() != RPAREN && tok[i-1].get_type() != ID && tok[i-1].get_type() != STR 
@@ -32,9 +33,9 @@ std::vector<Token> negatif(std::vector<Token> &tok)
 					}
 					tok.insert(tok.begin()+j,Token(RPAREN,(location){0,0}));
 				}
-			else
+				else
 				{
-					tok.insert(tok.begin()+i+1,Token(RPAREN,(location){0,0}));
+					tok.insert(tok.begin()+i+2,Token(RPAREN,(location){0,0}));
 				}
 			tok.insert(tok.begin()+i,Token(INT,(location){0,0},"0"));
 			tok.insert(tok.begin()+i,Token(LPAREN,(location){0,0}));
