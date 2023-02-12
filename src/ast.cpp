@@ -572,7 +572,7 @@ Expr * make_integer_literal(Token tok)
 
 Expr * make_double_literal(Token tok)
 {
-	return new DoubleLiteral(tok.get_loc(),atol(tok.get_text().c_str()));
+	return new DoubleLiteral(tok.get_loc(),atof(tok.get_text().c_str()));
 }
 
 Expr * make_string_literal(Token tok)
