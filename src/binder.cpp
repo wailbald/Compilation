@@ -196,8 +196,8 @@ void Binder::visit(FunCall &f_call)
 {
 	FunDecl &f_decl = dynamic_cast<FunDecl&>(*cherche(f_call.loc, f_call.func_name));
 	f_call.set_decl(&f_decl);
-
-	for(auto arg : f_call.get_args())
+	auto args = f_call.get_args();
+	for(auto arg : args)
 	{
 		arg->accept(*this);
 	}
@@ -223,6 +223,7 @@ void Binder::visit(ForLoop &floop)
 	depth++;
 
 	floop.get_variable()->accept(*this);
+	floop.get_cond()->accept(*this);
 	floop.get_high()->accept(*this);
 	loop.push_back(&floop);
 	floop.get_body()->accept(*this);
@@ -257,4 +258,5 @@ void Binder::visit(Return &ret)
 		exit(12);
 	}
 	ret.set_func(&function.back());
+	ret.get_expr()->accept(*this);
 }

@@ -15,8 +15,10 @@ int main(int argc, char** argv)
 	std::vector<Token> tok = lexer(argv[1]);
 	Tree prog = parser(tok);
 	Binder bind;
+	TypeChecker checker;
 	ASTDumper dumper(&std::cout);
 	prog.root->accept(bind);
+	prog.root->accept(checker);
 	prog.root->accept(dumper);
 	std::cout<<std::endl;
 

@@ -107,20 +107,24 @@ std::vector<Token> turntoNPI(std::vector<Token> &tok)
 			if(tok.size()>1 && tok[i+1].get_type() == LPAREN)
 			{
 				std::vector<Token> fun;
-				int awb = i;
-				while(tok[awb].get_type() != RPAREN)
+				int awb = 0;
+				int paren_depth = 1;
+				fun.push_back(tok[awb]);
+				tok.erase(tok.begin());
+				fun.push_back(tok[awb]);
+				tok.erase(tok.begin());
+				while(paren_depth > 0)
 				{
+					if(tok[awb].get_type() == LPAREN)
+						paren_depth++;
+					if(tok[awb].get_type() == RPAREN)
+						paren_depth--;
 					fun.push_back(tok[awb]);
-					awb++;
+					tok.erase(tok.begin());
 				}
 				fun.push_back(tok[awb]);
 				func_npi(id,fun);
 				out.push_back(Token(FUNCALL,(location){0,0},std::to_string(id)));
-				while(tok[i].get_type() != RPAREN)
-				{
-					tok.erase(tok.begin());
-				}
-				tok.erase(tok.begin());
 				id ++;
 			}
 
@@ -586,7 +590,7 @@ Expr * make_mathematical_expression(std::vector<Token> &tok)
 	npi = turntoNPI(npi);
 	Expr * expr = math_expr(npi);
 	int paren_count = 0;
-	while(tok[0].get_type()!=SEMICOLON && tok.size())
+	while(tok[0].get_type()!=SEMICOLON && tok[0].get_type()!=COMMA && tok.size())
 	{
 		if(tok[0].get_type()==LPAREN)
 			paren_count++;
@@ -732,7 +736,6 @@ std::vector<Expr *> parse_func_args(std::vector<Token> &tok)
 			exit(5);
 		}
 	}
-	tok.erase(tok.begin());
 	return args;
 }
 
@@ -743,7 +746,11 @@ Expr* make_funcall(std::vector<Token> &tok)
 	tok.erase(tok.begin());
 	tok.erase(tok.begin());
 	std::vector<Expr *> args = parse_func_args(tok);
-
+	while(tok[0].get_type() != RPAREN)
+	{
+		tok.erase(tok.begin());
+	}
+	tok.erase(tok.begin());
 	return new FunCall(funcall_location,args,token_id.get_text());
 }
 
@@ -886,7 +893,11 @@ Expr * parse_assign(std::vector<Token> &tok)
 	line.insert(0,"#/#");
 	std::smatch match;
 	Expr* expr = NULL;
-	if(std::regex_search(line,match,pOP_regex))
+	if(std::regex_search(line,match,pASSIGN_regex))
+	{	
+		expr =  make_assign(tok);
+	}
+	else if(std::regex_search(line,match,pOP_regex))
 	{
 		expr = make_mathematical_expression(tok);
 	}
@@ -1006,6 +1017,14 @@ Expr * make_seq(std::vector<Token> &tok)
 	while(tok[0].get_type() != EOF_ && !tok.empty())
 	{
 		exprs.push_back(parse_token(tok));
+		if(tok[0].get_type() == COMMA)
+		{
+			while(tok[0].get_type() != SEMICOLON)
+			{
+				tok.erase(tok.begin());
+			}
+			tok.erase(tok.begin());
+		}
 		if(tok[0].get_type() == SEMICOLON && !tok.empty())
 		{
 			tok.erase(tok.begin());

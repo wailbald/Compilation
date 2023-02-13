@@ -71,6 +71,7 @@ int TypeChecker::visit(IfThenElse &ite) {
   if(cond_type != t_int)
   {
     printf("Error: if condition must be an integer\n");
+    exit(5);
   }
   ite.get_then()->accept(*this);
   ite.get_else()->accept(*this);
@@ -99,7 +100,8 @@ int TypeChecker::visit(FunCall &call) {
 
   if(decl->get_params().size() != args.size())
   {
-    printf("Error: Wrong argument number in fucall: passing %lu, expected %lu\n",decl->get_params().size(),args.size());
+    printf("Error: Wrong argument number in fucall: passing %lu, expected %lu\n",args.size(),decl->get_params().size());
+    exit(5);
   }
   auto params = decl->get_params();
   for(size_t i = 0; i<params.size();i++)
