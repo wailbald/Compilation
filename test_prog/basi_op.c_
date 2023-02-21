@@ -9,3 +9,5 @@ double f = 20.2;
 e = (d / a);
 int not = !e;
 int comp = ~not;
+
+int $abc;

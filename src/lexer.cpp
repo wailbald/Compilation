@@ -393,6 +393,9 @@ std::vector<Token> gen_tok_line(std::string line,size_t *line_num,size_t *col_nu
 		char path[PATH_MAX ];
 		getcwd(path,PATH_MAX);
 		printf("\033[1m%s/%s:%lu:%lu: \033[1;31mError\033[0m: Unrecognized token\n",path,filename,*line_num,*col_num);
+		line.erase(line.begin());
+		line.erase(line.begin());
+		line.erase(line.begin());
 		std::cout<<line<<std::endl;
 		exit(2);
 	}
